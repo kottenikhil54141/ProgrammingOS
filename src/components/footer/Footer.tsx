@@ -60,7 +60,7 @@ function FooterLogo() {
       </div>
       <div className="leading-tight">
         <div className="text-[15px] font-bold tracking-tight text-white">
-          ProgrammingOS
+          CodeVerseAI
         </div>
         <div className="text-[11px] text-white/35 font-mono tracking-wider">
           Python · JavaScript
@@ -223,7 +223,7 @@ export default function Footer() {
         <div className="flex flex-col gap-4 border-t border-white/[0.05] py-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <p className="text-xs text-white/30">
-              © {year} ProgrammingOS. All rights reserved.
+              © {year} CodeVerseAI. All rights reserved.
             </p>
             <StatusBar />
           </div>

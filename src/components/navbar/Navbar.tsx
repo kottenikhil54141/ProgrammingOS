@@ -210,7 +210,7 @@ function Logo() {
       </div>
       <div className="leading-tight">
         <div className="text-[15px] font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
-          ProgrammingOS
+          CodeVerseAI
         </div>
         <div className="text-[11px] text-white/40 font-mono tracking-wider">
           Python · JavaScript

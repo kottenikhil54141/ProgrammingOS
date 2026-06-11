@@ -21,17 +21,17 @@ const FAQS: FAQ[] = [
   },
   {
     category: "Getting Started",
-    q: "How is ProgrammingOS different from YouTube or Udemy?",
-    a: "Video courses give you the illusion of understanding. ProgrammingOS forces you to write code from the first minute. Every concept is gated behind actually doing it — not watching it. Our AI tutor catches your mistakes in real time, and projects build a portfolio you can show employers.",
+    q: "How is CodeVerseAI different from YouTube or Udemy?",
+    a: "Video courses give you the illusion of understanding. CodeVerseAI forces you to write code from the first minute. Every concept is gated behind actually doing it — not watching it. Our AI tutor catches your mistakes in real time, and projects build a portfolio you can show employers.",
   },
   {
     category: "Platform",
-    q: "Can I use ProgrammingOS on mobile?",
+    q: "Can I use CodeVerseAI on mobile?",
     a: "The full platform — including the code editor, AI tutor, and project workspace — is available on tablet. Mobile is fully supported for reading, exercises, and challenge solving. For serious project work we recommend a laptop or desktop.",
   },
   {
     category: "Platform",
-    q: "Which languages does ProgrammingOS support?",
+    q: "Which languages does CodeVerseAI support?",
     a: "Currently Python 3.12 and JavaScript ES2025 are fully supported with live in-browser execution. TypeScript, SQL, and Bash are available in read-only mode. C++, Java, and Go tracks are in active development and will launch Q3 2025.",
   },
   {
@@ -47,7 +47,7 @@ const FAQS: FAQ[] = [
   {
     category: "Career",
     q: "Will this help me get a job?",
-    a: "Directly. The project tracks are designed to mirror what engineering teams actually do. Your projects live in a portfolio page linked from your profile. We partner with companies in our hiring network who actively recruit ProgrammingOS learners — filtering by track completion and XP.",
+    a: "Directly. The project tracks are designed to mirror what engineering teams actually do. Your projects live in a portfolio page linked from your profile. We partner with companies in our hiring network who actively recruit CodeVerseAI learners — filtering by track completion and XP.",
   },
   {
     category: "Career",

@@ -1,5 +1,5 @@
 export const SITE = {
-  name: "ProgrammingOS",
+  name: "CodeVerseAI",
   description:
     "Become an Engineer. Not just another learner.",
   author: "Nik",

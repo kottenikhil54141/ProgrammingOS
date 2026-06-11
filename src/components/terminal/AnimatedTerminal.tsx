@@ -25,10 +25,10 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
   python: {
     label: "Python",
     filename: "main.py",
-    badge: "🐍",
+    badge: "",
     badgeColor: "text-[#22C55E]",
     lines: [
-      [{ text: "# ProgrammingOS — Become an Engineer", color: "#6B7280" }],
+      [{ text: "# CodeVerseAI — Become an Engineer", color: "#6B7280" }],
       [],
       [
         { text: "def ", color: "#7C5CFF" },
@@ -42,13 +42,13 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
       [
         { text: "    ", color: "" },
         { text: "return ", color: "#7C5CFF" },
-        { text: 'f"Hello, {name}! 🚀"', color: "#FF9966" },
+        { text: 'f"Hello, {name}! "', color: "#FF9966" },
       ],
       [],
       [
         { text: "students", color: "#F8FAFC" },
         { text: " = ", color: "#7C5CFF" },
-        { text: '["Nik", "Nikhil!"]', color: "#FF9966" },
+        { text: '["Nik", "Nikhil"]', color: "#FF9966" },
       ],
       [
         { text: "for ", color: "#7C5CFF" },
@@ -66,8 +66,8 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
       ],
     ],
     outputLines: [
-      "Hello, Nik! 🚀",
-      "Hello, Nikhil!",
+      "Hello, Nik! ",
+      "Hello, Nikhil",
       "",
       "✓ Execution successful  [0.012s]",
     ],
@@ -78,7 +78,7 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
     badge: "⚡",
     badgeColor: "text-yellow-400",
     lines: [
-      [{ text: "// ProgrammingOS — Modern JS", color: "#6B7280" }],
+      [{ text: "// CodeVerseAI — Modern JS", color: "#6B7280" }],
       [],
       [
         { text: "const ", color: "#7C5CFF" },
@@ -92,7 +92,7 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
         { text: "return ", color: "#7C5CFF" },
         { text: "`Hello, ${", color: "#FF9966" },
         { text: "name", color: "#FF6B4A" },
-        { text: "}! 🚀`", color: "#FF9966" },
+        { text: "}! `", color: "#FF9966" },
         { text: ";", color: "#F8FAFC" },
       ],
       [{ text: "};", color: "#F8FAFC" }],
@@ -116,26 +116,54 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
       ],
     ],
     outputLines: [
-      "Hello, Nik! 🚀",
-      "Hello, Nikhil! 🚀",
+      "Hello, Nik! ",
+      "Hello, Nikhil!",
       "",
       "✓ Execution successful  [0.008s]",
     ],
   },
 };
 
+/* ─── Helpers ─────────────────────────────────────────────────────── */
+
+/** Flatten all tokens of a line into a single array of {char, color} */
+interface CharToken {
+  char: string;
+  color: string;
+}
+
+function flattenLine(tokens: CodeToken[]): CharToken[] {
+  return tokens.flatMap((t) =>
+    t.text.split("").map((char) => ({ char, color: t.color || "#F8FAFC" }))
+  );
+}
+
+/** Typing speed in ms per character */
+const CHAR_DELAY = 20; // fast but readable
+const BLANK_LINE_DELAY = 150;
+const POST_LINE_PAUSE = 80; // brief pause at end of each line
+const PRE_RUN_PAUSE = 500;
+const OUTPUT_LINE_DELAY = 290;
+const SUCCESS_HOLD = 3500;
+
 /* ─── State Machine ───────────────────────────────────────────────── */
 type Phase = "typing" | "running" | "output" | "success" | "resetting";
 
 interface TerminalState {
   phase: Phase;
-  visibleLines: number;
+  /** Current line index being typed */
+  currentLine: number;
+  /** How many chars of the current line have been revealed */
+  currentChar: number;
+  /** Lines fully typed (array of char arrays) */
+  completedLines: CharToken[][];
+  /** How many output lines shown */
   visibleOutput: number;
-  charIndex: number;
   language: Language;
 }
 
 type TerminalAction =
+  | { type: "TYPE_CHAR" }
   | { type: "NEXT_LINE" }
   | { type: "START_RUNNING" }
   | { type: "NEXT_OUTPUT" }
@@ -147,36 +175,57 @@ function terminalReducer(
   state: TerminalState,
   action: TerminalAction
 ): TerminalState {
+  const config = LANGUAGES[state.language];
+
   switch (action.type) {
-    case "NEXT_LINE":
-      return { ...state, visibleLines: state.visibleLines + 1 };
+    case "TYPE_CHAR":
+      return { ...state, currentChar: state.currentChar + 1 };
+
+    case "NEXT_LINE": {
+      const line = config.lines[state.currentLine];
+      const chars = flattenLine(line);
+      return {
+        ...state,
+        completedLines: [...state.completedLines, chars],
+        currentLine: state.currentLine + 1,
+        currentChar: 0,
+      };
+    }
+
     case "START_RUNNING":
       return { ...state, phase: "running" };
+
     case "NEXT_OUTPUT":
       return {
         ...state,
         phase: "output",
         visibleOutput: state.visibleOutput + 1,
       };
+
     case "FINISH":
       return { ...state, phase: "success" };
+
     case "RESET":
       return {
         ...state,
         phase: "typing",
-        visibleLines: 0,
+        currentLine: 0,
+        currentChar: 0,
+        completedLines: [],
         visibleOutput: 0,
-        charIndex: 0,
       };
+
     case "SET_LANGUAGE":
       return {
         ...state,
         language: action.language,
         phase: "typing",
-        visibleLines: 0,
+        currentLine: 0,
+        currentChar: 0,
+        completedLines: [],
         visibleOutput: 0,
-        charIndex: 0,
       };
+
     default:
       return state;
   }
@@ -202,9 +251,10 @@ function RunningDots() {
 export default function AnimatedTerminal() {
   const [state, dispatch] = useReducer(terminalReducer, {
     phase: "typing",
-    visibleLines: 0,
+    currentLine: 0,
+    currentChar: 0,
+    completedLines: [],
     visibleOutput: 0,
-    charIndex: 0,
     language: "python",
   });
 
@@ -221,24 +271,49 @@ export default function AnimatedTerminal() {
   useEffect(() => {
     clearTimer();
 
-    const { phase, visibleLines, visibleOutput } = state;
+    const { phase, currentLine, currentChar, visibleOutput } = state;
     const totalLines = config.lines.length;
     const totalOutput = config.outputLines.length;
 
+    /* ── TYPING PHASE ── */
     if (phase === "typing") {
-      if (visibleLines < totalLines) {
-        // Longer delay for non-empty lines (simulate typing), shorter for blank
-        const delay = config.lines[visibleLines].length === 0 ? 100 : 380;
-        timerRef.current = setTimeout(() => dispatch({ type: "NEXT_LINE" }), delay);
-      } else {
-        // All lines typed → trigger running
+      if (currentLine >= totalLines) {
+        // All lines done → pause then run
         timerRef.current = setTimeout(
           () => dispatch({ type: "START_RUNNING" }),
-          700
+          PRE_RUN_PAUSE
         );
+        return clearTimer;
+      }
+
+      const line = config.lines[currentLine];
+      const isBlank = line.length === 0;
+
+      if (isBlank) {
+        // Blank line — commit immediately with a tiny delay
+        timerRef.current = setTimeout(() => {
+          dispatch({ type: "NEXT_LINE" });
+        }, BLANK_LINE_DELAY);
+        return clearTimer;
+      }
+
+      const totalChars = flattenLine(line).length;
+
+      if (currentChar < totalChars) {
+        // Type next character
+        timerRef.current = setTimeout(
+          () => dispatch({ type: "TYPE_CHAR" }),
+          CHAR_DELAY
+        );
+      } else {
+        // Line fully typed — brief pause before moving to next line
+        timerRef.current = setTimeout(() => {
+          dispatch({ type: "NEXT_LINE" });
+        }, POST_LINE_PAUSE);
       }
     }
 
+    /* ── RUNNING PHASE ── */
     if (phase === "running") {
       timerRef.current = setTimeout(
         () => dispatch({ type: "NEXT_OUTPUT" }),
@@ -246,26 +321,46 @@ export default function AnimatedTerminal() {
       );
     }
 
+    /* ── OUTPUT PHASE ── */
     if (phase === "output") {
       if (visibleOutput < totalOutput) {
         timerRef.current = setTimeout(
           () => dispatch({ type: "NEXT_OUTPUT" }),
-          320
+          OUTPUT_LINE_DELAY
         );
       } else {
-        timerRef.current = setTimeout(() => dispatch({ type: "FINISH" }), 300);
+        timerRef.current = setTimeout(
+          () => dispatch({ type: "FINISH" }),
+          300
+        );
       }
     }
 
+    /* ── SUCCESS PHASE ── */
     if (phase === "success") {
-      timerRef.current = setTimeout(() => dispatch({ type: "RESET" }), 3200);
+      timerRef.current = setTimeout(
+        () => dispatch({ type: "RESET" }),
+        SUCCESS_HOLD
+      );
     }
 
     return clearTimer;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.phase, state.visibleLines, state.visibleOutput, state.language]);
+  }, [state.phase, state.currentLine, state.currentChar, state.visibleOutput, state.language]);
 
-  const isTyping = state.phase === "typing" && state.visibleLines < config.lines.length;
+  /* ── Derive current in-progress line chars ── */
+  const config2 = LANGUAGES[state.language];
+  const isTypingLine =
+    state.phase === "typing" &&
+    state.currentLine < config2.lines.length &&
+    config2.lines[state.currentLine].length > 0;
+
+  const inProgressChars: CharToken[] = isTypingLine
+    ? flattenLine(config2.lines[state.currentLine]).slice(0, state.currentChar)
+    : [];
+
+  const showCursor =
+    state.phase === "typing" && state.currentLine < config2.lines.length;
 
   return (
     <div className="liquid-glass rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
@@ -305,38 +400,52 @@ export default function AnimatedTerminal() {
 
       {/* ── Code Editor Panel ── */}
       <div className="p-5 min-h-[240px] bg-[#060d1a]">
-        {/* Line numbers + code */}
         <div className="font-mono text-sm leading-7 space-y-0">
-          {config.lines.slice(0, state.visibleLines).map((tokens, lineIdx) => (
+          {/* Fully typed lines */}
+          {state.completedLines.map((chars, lineIdx) => (
             <motion.div
-              key={`${state.language}-line-${lineIdx}`}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.18 }}
+              key={`${state.language}-done-${lineIdx}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.1 }}
               className="flex gap-4"
             >
               <span className="w-5 shrink-0 text-right text-[#3a4a5a] select-none text-xs leading-7">
                 {lineIdx + 1}
               </span>
               <span>
-                {tokens.map((token, ti) =>
-                  token.text ? (
-                    <span key={ti} style={{ color: token.color || "#F8FAFC" }}>
-                      {token.text}
-                    </span>
-                  ) : (
-                    <span key={ti}>&nbsp;</span>
-                  )
-                )}
+                {chars.map((c, ci) => (
+                  <span key={ci} style={{ color: c.color }}>
+                    {c.char === " " ? "\u00A0" : c.char}
+                  </span>
+                ))}
               </span>
             </motion.div>
           ))}
 
-          {/* Blinking cursor */}
-          {isTyping && (
+          {/* Currently-typing line */}
+          {isTypingLine && (
             <div className="flex gap-4">
               <span className="w-5 shrink-0 text-right text-[#3a4a5a] select-none text-xs leading-7">
-                {state.visibleLines + 1}
+                {state.currentLine + 1}
+              </span>
+              <span>
+                {inProgressChars.map((c, ci) => (
+                  <span key={ci} style={{ color: c.color }}>
+                    {c.char === " " ? "\u00A0" : c.char}
+                  </span>
+                ))}
+                {/* Blinking cursor */}
+                <span className="cursor-blink text-[#FF6B4A] font-bold">▋</span>
+              </span>
+            </div>
+          )}
+
+          {/* Cursor on blank line (between typed lines) */}
+          {showCursor && !isTypingLine && state.currentLine < config2.lines.length && (
+            <div className="flex gap-4">
+              <span className="w-5 shrink-0 text-right text-[#3a4a5a] select-none text-xs leading-7">
+                {state.currentLine + 1}
               </span>
               <span className="cursor-blink text-[#FF6B4A] font-bold">▋</span>
             </div>
@@ -384,7 +493,7 @@ export default function AnimatedTerminal() {
         {/* Output lines */}
         <div className="px-5 py-4 font-mono text-sm min-h-[130px] leading-7">
           <AnimatePresence mode="wait">
-            {state.phase === "typing" && state.visibleLines === 0 && (
+            {state.phase === "typing" && state.currentLine === 0 && (
               <motion.span
                 key="waiting"
                 initial={{ opacity: 0 }}

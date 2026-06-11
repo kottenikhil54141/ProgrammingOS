@@ -270,7 +270,7 @@ export default function FeaturesSection() {
             <span className="gradient-text-secondary">go from zero to hired</span>
           </h2>
           <p className="mt-4 text-subtitle text-white/50 max-w-2xl mx-auto">
-            ProgrammingOS is not a video course. It&apos;s an interactive operating
+            CodeVerseAI is not a video course. It&apos;s an interactive operating
             system for learning to code — live execution, AI tutoring, projects,
             and progress tracking all in one.
           </p>

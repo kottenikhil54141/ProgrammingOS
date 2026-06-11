@@ -9,9 +9,9 @@ import FAQSection from "@/components/faq/FAQSection";
 import Footer from "@/components/footer/Footer";
 
 export const metadata = {
-  title: "ProgrammingOS — Become an Engineer, Not Just a Learner",
+  title: "CodeVerseAI — Become an Engineer, Not Just a Learner",
   description:
-    "Learn Python and JavaScript through live code execution, AI-powered tutoring, real-world projects, and structured roadmaps. Join 25,000+ engineers on ProgrammingOS.",
+    "Learn Python and JavaScript through live code execution, AI-powered tutoring, real-world projects, and structured roadmaps. Join 25,000+ engineers on CodeVerseAI.",
 };
 
 export default function Home() {

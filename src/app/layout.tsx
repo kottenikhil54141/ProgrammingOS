@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/components/theme-provider";
+import { AuthProvider } from "@/lib/auth-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,8 +20,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ProgrammingOS — Become an Engineer",
-    template: "%s | ProgrammingOS",
+    default: "CodeVerseAI — Become an Engineer",
+    template: "%s | CodeVerseAI",
   },
   description:
     "The world's best programming learning platform. Learn Python and JavaScript through immersive coding, visual execution, AI-powered guidance, and real-world projects.",
@@ -33,31 +34,31 @@ export const metadata: Metadata = {
     "interview prep",
     "placement preparation",
     "programming courses",
-    "ProgrammingOS",
+    "CodeVerseAI",
   ],
-  authors: [{ name: "ProgrammingOS Team" }],
-  creator: "ProgrammingOS",
+  authors: [{ name: "CodeVerseAI Team" }],
+  creator: "CodeVerseAI",
   metadataBase: new URL("https://programmingos.dev"),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://programmingos.dev",
-    title: "ProgrammingOS — Become an Engineer",
+    title: "CodeVerseAI — Become an Engineer",
     description:
       "Not just another learner. Learn Python and JavaScript through immersive coding, AI guidance, and real-world projects.",
-    siteName: "ProgrammingOS",
+    siteName: "CodeVerseAI",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "ProgrammingOS — Become an Engineer",
+        alt: "CodeVerseAI — Become an Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ProgrammingOS — Become an Engineer",
+    title: "CodeVerseAI — Become an Engineer",
     description: "Not just another learner. The world's best programming learning platform.",
     images: ["/og-image.png"],
   },
@@ -96,7 +97,9 @@ export default function RootLayout({
         <meta name="theme-color" content="#050816" />
       </head>
       <body className="font-sans antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
