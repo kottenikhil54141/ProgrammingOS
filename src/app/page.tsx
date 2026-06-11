@@ -1,10 +1,13 @@
+import Navbar from "@/components/navbar/Navbar";
 import GlassCard from "@/components/ui/GlassCard";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.18),transparent_35%),linear-gradient(135deg,#090d1a_0%,#0b1020_45%,#050816_100%)] px-4 py-8 text-white sm:px-6 lg:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-7xl items-center">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.18),transparent_35%),linear-gradient(135deg,#090d1a_0%,#0b1020_45%,#050816_100%)] text-white">
+      <Navbar />
+
+      <section className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-7xl items-center px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid w-full items-center gap-10 lg:grid-cols-2">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 backdrop-blur-xl">
@@ -13,8 +16,10 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <h1 className="max-w-xl text-5xl font-semibold leading-tight tracking-tight text-white sm:text-6xl">
-                Become an Engineer.
+              <h1 className="max-w-xl text-5xl font-semibold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
+                Become
+                <br />
+                an Engineer.
                 <br />
                 Not just another learner.
               </h1>
@@ -72,7 +77,15 @@ export default function Home() {
                   <div className="font-mono text-emerald-300">
                     Hello Nik
                     <br />
-                    0 1 2 3 4
+                    0
+                    <br />
+                    1
+                    <br />
+                    2
+                    <br />
+                    3
+                    <br />
+                    4
                   </div>
                 </div>
               </div>

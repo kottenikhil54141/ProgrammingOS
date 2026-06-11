@@ -3,8 +3,7 @@
 import { ButtonHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
 
-interface PrimaryButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {}
+interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export default function PrimaryButton({
   className,
