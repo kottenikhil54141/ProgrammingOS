@@ -178,7 +178,7 @@ function PasswordStrength({ password }: { password: string }) {
           </span>
         ))}
       </div>
-      <p className="text-xs" style={{ color: colors[strength] }}>
+      <p className="text-xs font-semibold" style={{ color: colors[strength] }}>
         {labels[strength]}
       </p>
     </div>
@@ -241,21 +241,26 @@ function Step1({
   data,
   setData,
   onNext,
+  acceptedTerms,
+  setAcceptedTerms,
 }: {
   data: SignupStep1;
   setData: (d: SignupStep1) => void;
   onNext: () => void;
+  acceptedTerms: boolean;
+  setAcceptedTerms: (v: boolean) => void;
 }) {
   const id = useId();
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [errors, setErrors] = useState<Partial<SignupStep1 & { confirmPassword: string }>>({});
+  const [errors, setErrors] = useState<Partial<SignupStep1 & { confirmPassword: string; terms: string }>>({});
 
   function validate(): boolean {
     const e: typeof errors = {};
     if (!data.email.includes("@")) e.email = "Enter a valid email.";
     if (data.password.length < 8) e.password = "Password must be at least 8 characters.";
     if (data.password !== data.confirmPassword) e.confirmPassword = "Passwords do not match.";
+    if (!acceptedTerms) e.terms = "You must agree to the Terms of Service.";
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -308,6 +313,39 @@ function Step1({
           </button>
         }
       />
+
+      {/* Terms and Conditions Checkbox */}
+      <div className="space-y-2 pt-1">
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e) => {
+              setAcceptedTerms(e.target.checked);
+              setErrors((p) => ({ ...p, terms: undefined }));
+            }}
+            className="mt-0.5 h-4 w-4 rounded border-white/10 bg-white/5 text-[#7C5CFF] focus:ring-[#7C5CFF]/30 outline-none"
+          />
+          <span className="text-xs text-white/50 leading-relaxed">
+            I agree to the{" "}
+            <Link href="#" className="text-[#7C5CFF] hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="text-[#7C5CFF] hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
+        {errors.terms && (
+          <p className="text-xs text-red-400 flex items-center gap-1.5">
+            <AlertCircle className="h-3 w-3 shrink-0" />
+            {errors.terms}
+          </p>
+        )}
+      </div>
+
       <NavButtons onNext={() => { if (validate()) onNext(); }} />
     </div>
   );
@@ -357,7 +395,7 @@ function Step2({
         placeholder="alexchen"
         icon={<AtSign className="h-4 w-4" />}
         error={errors.username}
-        hint="Your public profile URL will be codeversai.dev/@alexchen"
+        hint="Your public profile URL will be niksai.dev/@alexchen"
         autoComplete="username"
       />
       <NavButtons onBack={onBack} onNext={() => { if (validate()) onNext(); }} />
@@ -453,7 +491,7 @@ function Step3({
             className="flex items-center gap-2.5 rounded-2xl border border-red-500/20 bg-red-500/[0.07] px-4 py-3"
           >
             <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
-            <p className="text-sm text-red-400">{AUTH_ERROR_MESSAGES[error]}</p>
+            <p className="text-sm text-red-400">{AUTH_ERROR_MESSAGES[error] || error}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -535,6 +573,8 @@ export default function SignupPage() {
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [error, setError] = useState<AuthError | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
 
   const [step1, setStep1] = useState<SignupStep1>({ email: "", password: "", confirmPassword: "" });
   const [step2, setStep2] = useState<SignupStep2>({ name: "", username: "" });
@@ -545,11 +585,15 @@ export default function SignupPage() {
 
   async function handleSubmit() {
     setError(null);
-    const { error: authError } = await signup({ ...step1, ...step2, ...step3 });
+    const { error: authError, verificationToken: token } = await signup({ ...step1, ...step2, ...step3 });
     if (authError) {
       setError(authError);
+    } else if (token) {
+      // User created successfully, but needs email verification.
+      setVerificationToken(token);
     } else {
-      router.push(ROUTES.DASHBOARD);
+      // Fallback
+      router.push(ROUTES.LOGIN);
     }
   }
 
@@ -564,7 +608,7 @@ export default function SignupPage() {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
-      className="w-full max-w-lg"
+      className="w-full max-w-lg animate-fade-in"
     >
       <div
         className="relative overflow-hidden rounded-3xl p-8 sm:p-10"
@@ -580,64 +624,119 @@ export default function SignupPage() {
           style={{ background: "radial-gradient(circle, rgba(255,107,74,0.7) 0%, transparent 70%)", filter: "blur(24px)" }}
         />
 
-        {/* Step indicator */}
-        <StepIndicator current={step} />
+        <AnimatePresence mode="wait">
+          {!verificationToken ? (
+            <motion.div key="signup-form-flow" className="space-y-6">
+              {/* Step indicator */}
+              <StepIndicator current={step} />
 
-        {/* Dynamic heading */}
-        <AnimatePresence mode="wait" initial={false} custom={dir}>
-          <motion.div
-            key={`heading-${step}`}
-            custom={dir}
-            variants={SLIDE_VARIANTS}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
-            className="mb-6 text-center"
-          >
-            <h1 className="text-2xl font-black text-white tracking-tight">
-              {stepTitles[step].heading}
-            </h1>
-            <p className="mt-1.5 text-sm text-white/45">{stepTitles[step].sub}</p>
-          </motion.div>
+              {/* Dynamic heading */}
+              <AnimatePresence mode="wait" initial={false} custom={dir}>
+                <motion.div
+                  key={`heading-${step}`}
+                  custom={dir}
+                  variants={SLIDE_VARIANTS}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
+                  className="mb-6 text-center"
+                >
+                  <h1 className="text-2xl font-black text-white tracking-tight">
+                    {stepTitles[step].heading}
+                  </h1>
+                  <p className="mt-1.5 text-sm text-white/45">{stepTitles[step].sub}</p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Step content */}
+              <AnimatePresence mode="wait" initial={false} custom={dir}>
+                <motion.div
+                  key={`step-${step}`}
+                  custom={dir}
+                  variants={SLIDE_VARIANTS}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
+                >
+                  {step === 0 && (
+                    <Step1
+                      data={step1}
+                      setData={setStep1}
+                      onNext={goNext}
+                      acceptedTerms={acceptedTerms}
+                      setAcceptedTerms={setAcceptedTerms}
+                    />
+                  )}
+                  {step === 1 && <Step2 data={step2} setData={setStep2} onNext={goNext} onBack={goBack} />}
+                  {step === 2 && (
+                    <Step3
+                      data={step3}
+                      setData={setStep3}
+                      onBack={goBack}
+                      onSubmit={handleSubmit}
+                      isLoading={isLoading}
+                      error={error}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Switch to login */}
+              <p className="mt-6 text-center text-sm text-white/40">
+                Already have an account?{" "}
+                <Link
+                  href={ROUTES.LOGIN}
+                  className="font-semibold text-[#7C5CFF] hover:text-[#A78BFF] transition-colors"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="verification-success"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center space-y-6 py-6"
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-white">Check your email!</h2>
+                <p className="text-sm text-white/60 leading-relaxed max-w-sm mx-auto">
+                  We&apos;ve sent a verification link to <span className="text-white font-medium">{step1.email}</span>. Click the link to activate your account.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-left">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/30 block mb-1">
+                  Sandbox Simulation Mode
+                </span>
+                <p className="text-xs text-white/50 leading-relaxed mb-3">
+                  Click the direct link below to simulate receiving the verification email and verify the account:
+                </p>
+                <Link
+                  href={`${ROUTES.VERIFY_EMAIL}?token=${verificationToken}`}
+                  className="block text-center rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs font-semibold text-[#7C5CFF] hover:bg-white/10 transition-colors"
+                >
+                  Simulate Email Verification Link
+                </Link>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href={ROUTES.LOGIN}
+                  className="text-sm font-semibold text-white/40 hover:text-white transition-colors"
+                >
+                  Back to Sign In
+                </Link>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
-
-        {/* Step content */}
-        <AnimatePresence mode="wait" initial={false} custom={dir}>
-          <motion.div
-            key={`step-${step}`}
-            custom={dir}
-            variants={SLIDE_VARIANTS}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
-          >
-            {step === 0 && <Step1 data={step1} setData={setStep1} onNext={goNext} />}
-            {step === 1 && <Step2 data={step2} setData={setStep2} onNext={goNext} onBack={goBack} />}
-            {step === 2 && (
-              <Step3
-                data={step3}
-                setData={setStep3}
-                onBack={goBack}
-                onSubmit={handleSubmit}
-                isLoading={isLoading}
-                error={error}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Switch to login */}
-        <p className="mt-6 text-center text-sm text-white/40">
-          Already have an account?{" "}
-          <Link
-            href={ROUTES.LOGIN}
-            className="font-semibold text-[#7C5CFF] hover:text-[#A78BFF] transition-colors"
-          >
-            Sign in
-          </Link>
-        </p>
       </div>
     </motion.div>
   );

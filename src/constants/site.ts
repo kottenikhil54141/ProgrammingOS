@@ -1,5 +1,5 @@
 export const SITE = {
-  name: "CodeVerseAI",
+  name: "NIK's AI",
   description:
     "Become an Engineer. Not just another learner.",
   author: "Nik",

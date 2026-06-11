@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
 import type {
@@ -18,7 +19,7 @@ import type {
 } from "@/types/auth";
 
 /* ─── Storage key ───────────────────────────────────────────────────── */
-const STORAGE_KEY = "codeversai_auth";
+const STORAGE_KEY = "niks_ai_auth";
 
 /* ─── Reducer ───────────────────────────────────────────────────────── */
 type AuthAction =
@@ -41,30 +42,17 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 /* ─── Context ───────────────────────────────────────────────────────── */
 interface AuthContextValue extends AuthState {
+  accessToken: string | null;
   login: (credentials: LoginCredentials) => Promise<{ error: AuthError | null }>;
-  signup: (data: SignupData) => Promise<{ error: AuthError | null }>;
-  logout: () => void;
+  signup: (data: SignupData) => Promise<{ error: AuthError | null; verificationToken?: string }>;
+  logout: () => Promise<void>;
   updateUser: (patch: Partial<User>) => void;
+  refreshSession: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-/* ─── Mock helpers (swapped for real API when backend is ready) ────── */
-function createMockUser(data: SignupData): User {
-  return {
-    id: `user_${Date.now()}`,
-    email: data.email,
-    name: data.name,
-    avatar: undefined,
-    track: data.track,
-    xp: 0,
-    level: 1,
-    streak: 0,
-    joinedAt: new Date().toISOString(),
-  };
-}
-
-function persist(user: User | null) {
+function persistUser(user: User | null) {
   if (typeof window === "undefined") return;
   if (user) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
@@ -91,71 +79,133 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: false,
   });
 
-  // Rehydrate from localStorage on mount
-  useEffect(() => {
-    const saved = loadPersistedUser();
-    if (saved) {
-      dispatch({ type: "SET_USER", user: saved });
-    } else {
-      dispatch({ type: "SET_LOADING", value: false });
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  // Silent session refresh / rehydration
+  const refreshSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/auth/refresh", { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        setAccessToken(data.accessToken);
+        dispatch({ type: "SET_USER", user: data.user });
+        persistUser(data.user);
+        return true;
+      }
+    } catch (err) {
+      console.error("Session refresh network error:", err);
     }
+    // If refresh fails, clear auth state
+    setAccessToken(null);
+    dispatch({ type: "CLEAR_USER" });
+    persistUser(null);
+    return false;
   }, []);
 
+  // Rehydrate on mount
+  useEffect(() => {
+    async function initAuth() {
+      // First try refreshing via cookie
+      const success = await refreshSession();
+      if (!success) {
+        // If cookie refresh fails, fall back to check localStorage user just in case, but keep loader clear
+        const local = loadPersistedUser();
+        if (local) {
+          dispatch({ type: "SET_USER", user: local });
+        } else {
+          dispatch({ type: "SET_LOADING", value: false });
+        }
+      }
+    }
+    initAuth();
+  }, [refreshSession]);
+
+  // Login handler
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<{ error: AuthError | null }> => {
       dispatch({ type: "SET_LOADING", value: true });
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
+        const data = await res.json();
 
-      // Simulate network latency
-      await new Promise((r) => setTimeout(r, 900));
+        if (!res.ok) {
+          dispatch({ type: "SET_LOADING", value: false });
+          return { error: data.error || "invalid_credentials" };
+        }
 
-      // Retrieve mock stored user
-      const stored = loadPersistedUser();
-      if (stored && stored.email === credentials.email) {
-        dispatch({ type: "SET_USER", user: stored });
-        persist(stored);
+        setAccessToken(data.accessToken);
+        dispatch({ type: "SET_USER", user: data.user });
+        persistUser(data.user);
         return { error: null };
-      }
-
-      dispatch({ type: "SET_LOADING", value: false });
-      return { error: "invalid_credentials" };
-    },
-    []
-  );
-
-  const signup = useCallback(
-    async (data: SignupData): Promise<{ error: AuthError | null }> => {
-      dispatch({ type: "SET_LOADING", value: true });
-
-      await new Promise((r) => setTimeout(r, 1000));
-
-      if (data.password.length < 8) {
+      } catch {
         dispatch({ type: "SET_LOADING", value: false });
-        return { error: "weak_password" };
+        return { error: "network_error" };
       }
-
-      const user = createMockUser(data);
-      dispatch({ type: "SET_USER", user });
-      persist(user);
-      return { error: null };
     },
     []
   );
 
-  const logout = useCallback(() => {
-    persist(null);
+  // Signup handler
+  const signup = useCallback(
+    async (data: SignupData): Promise<{ error: AuthError | null; verificationToken?: string }> => {
+      dispatch({ type: "SET_LOADING", value: true });
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const resData = await res.json();
+
+        dispatch({ type: "SET_LOADING", value: false });
+        if (!res.ok) {
+          return { error: resData.error || "unknown" };
+        }
+
+        return { error: null, verificationToken: resData.verificationToken };
+      } catch {
+        dispatch({ type: "SET_LOADING", value: false });
+        return { error: "network_error" };
+      }
+    },
+    []
+  );
+
+  // Logout handler
+  const logout = useCallback(async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Logout network issue:", err);
+    }
+    setAccessToken(null);
     dispatch({ type: "CLEAR_USER" });
+    persistUser(null);
   }, []);
 
+  // Update user details locally
   const updateUser = useCallback((patch: Partial<User>) => {
     if (!state.user) return;
     const updated = { ...state.user, ...patch };
-    persist(updated);
+    persistUser(updated);
     dispatch({ type: "SET_USER", user: updated });
   }, [state.user]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ ...state, login, signup, logout, updateUser }),
-    [state, login, signup, logout, updateUser]
+    () => ({
+      ...state,
+      accessToken,
+      login,
+      signup,
+      logout,
+      updateUser,
+      refreshSession,
+    }),
+    [state, accessToken, login, signup, logout, updateUser, refreshSession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

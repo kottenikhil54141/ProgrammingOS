@@ -210,7 +210,7 @@ function Logo() {
       </div>
       <div className="leading-tight">
         <div className="text-[15px] font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
-          CodeVerseAI
+          NIK's <span className="bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] bg-clip-text text-transparent">AI</span>
         </div>
         <div className="text-[11px] text-white/40 font-mono tracking-wider">
           Python · JavaScript

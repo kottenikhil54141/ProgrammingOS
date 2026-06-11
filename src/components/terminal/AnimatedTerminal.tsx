@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 
 /* ─── Language Configurations ─────────────────────────────────────── */
-type Language = "python" | "javascript";
+type Language = "python" | "javascript" | "c" | "cpp" | "java";
 
 interface CodeToken {
   text: string;
@@ -28,7 +28,7 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
     badge: "",
     badgeColor: "text-[#22C55E]",
     lines: [
-      [{ text: "# CodeVerseAI — Become an Engineer", color: "#6B7280" }],
+      [{ text: "# NIK's AI — Become an Engineer", color: "#6B7280" }],
       [],
       [
         { text: "def ", color: "#7C5CFF" },
@@ -78,7 +78,7 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
     badge: "⚡",
     badgeColor: "text-yellow-400",
     lines: [
-      [{ text: "// CodeVerseAI — Modern JS", color: "#6B7280" }],
+      [{ text: "// NIK's AI — Modern JS", color: "#6B7280" }],
       [],
       [
         { text: "const ", color: "#7C5CFF" },
@@ -120,6 +120,112 @@ const LANGUAGES: Record<Language, LanguageConfig> = {
       "Hello, Nikhil!",
       "",
       "✓ Execution successful  [0.008s]",
+    ],
+  },
+  c: {
+    label: "C",
+    filename: "main.c",
+    badge: "C",
+    badgeColor: "text-blue-400",
+    lines: [
+      [{ text: "/* NIK's AI — Classic C */", color: "#6B7280" }],
+      [],
+      [
+        { text: "#include ", color: "#7C5CFF" },
+        { text: "<stdio.h>", color: "#FF9966" },
+      ],
+      [],
+      [
+        { text: "int ", color: "#7C5CFF" },
+        { text: "main", color: "#22C55E" },
+        { text: "() {", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    printf", color: "#22C55E" },
+        { text: "(", color: "#F8FAFC" },
+        { text: '"Hello, NIK\'s AI!\\n"', color: "#FF9966" },
+        { text: ");", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    return ", color: "#7C5CFF" },
+        { text: "0;", color: "#FF6B4A" },
+      ],
+      [{ text: "}", color: "#F8FAFC" }],
+    ],
+    outputLines: [
+      "Hello, NIK's AI!",
+      "",
+      "✓ Execution successful  [0.005s]",
+    ],
+  },
+  cpp: {
+    label: "C++",
+    filename: "main.cpp",
+    badge: "C++",
+    badgeColor: "text-blue-500",
+    lines: [
+      [{ text: "// NIK's AI — Modern C++", color: "#6B7280" }],
+      [],
+      [
+        { text: "#include ", color: "#7C5CFF" },
+        { text: "<iostream>", color: "#FF9966" },
+      ],
+      [],
+      [
+        { text: "int ", color: "#7C5CFF" },
+        { text: "main", color: "#22C55E" },
+        { text: "() {", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    std::cout << ", color: "#F8FAFC" },
+        { text: '"Hello, World!"', color: "#FF9966" },
+        { text: " << std::endl;", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    return ", color: "#7C5CFF" },
+        { text: "0;", color: "#FF6B4A" },
+      ],
+      [{ text: "}", color: "#F8FAFC" }],
+    ],
+    outputLines: [
+      "Hello, World!",
+      "",
+      "✓ Execution successful  [0.007s]",
+    ],
+  },
+  java: {
+    label: "Java",
+    filename: "Main.java",
+    badge: "☕",
+    badgeColor: "text-red-400",
+    lines: [
+      [{ text: "// NIK's AI — Enterprise Java", color: "#6B7280" }],
+      [],
+      [
+        { text: "public class ", color: "#7C5CFF" },
+        { text: "Main ", color: "#22C55E" },
+        { text: "{", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    public static void ", color: "#7C5CFF" },
+        { text: "main", color: "#22C55E" },
+        { text: "(String[] args) {", color: "#F8FAFC" },
+      ],
+      [
+        { text: "        System.out.println", color: "#22C55E" },
+        { text: "(", color: "#F8FAFC" },
+        { text: '"Hello, World!"', color: "#FF9966" },
+        { text: ");", color: "#F8FAFC" },
+      ],
+      [
+        { text: "    }", color: "#F8FAFC" },
+      ],
+      [{ text: "}", color: "#F8FAFC" }],
+    ],
+    outputLines: [
+      "Hello, World!",
+      "",
+      "✓ Execution successful  [0.035s]",
     ],
   },
 };

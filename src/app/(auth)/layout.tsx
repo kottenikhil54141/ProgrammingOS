@@ -43,7 +43,7 @@ function AuthLogo() {
         <Zap className="relative z-10 h-5 w-5 text-white" strokeWidth={2.5} />
       </div>
       <span className="text-[15px] font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
-        CodeVerseAI
+        NIK's <span className="bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] bg-clip-text text-transparent">AI</span>
       </span>
     </Link>
   );
@@ -71,7 +71,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
       {/* Footer */}
       <footer className="py-5 text-center text-xs text-white/20">
-        © {new Date().getFullYear()} CodeVerseAI · All rights reserved
+        © {new Date().getFullYear()} NIK's AI · All rights reserved
       </footer>
     </div>
   );

@@ -20,8 +20,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CodeVerseAI — Become an Engineer",
-    template: "%s | CodeVerseAI",
+    default: "NIK's AI — Become an Engineer",
+    template: "%s | NIK's AI",
   },
   description:
     "The world's best programming learning platform. Learn Python and JavaScript through immersive coding, visual execution, AI-powered guidance, and real-world projects.",
@@ -34,31 +34,31 @@ export const metadata: Metadata = {
     "interview prep",
     "placement preparation",
     "programming courses",
-    "CodeVerseAI",
+    "NIK's AI",
   ],
-  authors: [{ name: "CodeVerseAI Team" }],
-  creator: "CodeVerseAI",
+  authors: [{ name: "NIK's AI Team" }],
+  creator: "NIK's AI",
   metadataBase: new URL("https://programmingos.dev"),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://programmingos.dev",
-    title: "CodeVerseAI — Become an Engineer",
+    title: "NIK's AI — Become an Engineer",
     description:
       "Not just another learner. Learn Python and JavaScript through immersive coding, AI guidance, and real-world projects.",
-    siteName: "CodeVerseAI",
+    siteName: "NIK's AI",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "CodeVerseAI — Become an Engineer",
+        alt: "NIK's AI — Become an Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CodeVerseAI — Become an Engineer",
+    title: "NIK's AI — Become an Engineer",
     description: "Not just another learner. The world's best programming learning platform.",
     images: ["/og-image.png"],
   },

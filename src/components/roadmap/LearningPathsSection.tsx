@@ -252,6 +252,128 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
   );
 }
 
+/* ─── Global Roadmap Timeline ─────────────────────────────────────── */
+const ROADMAP_STEPS = [
+  {
+    phase: "Beginner",
+    title: "Syntax & Logic",
+    description: "Variables, loops, control flow, functions, and elementary algorithms.",
+    skills: ["Variables", "Loops", "Functions", "Conditionals"],
+    icon: "🟢",
+    color: "from-green-500 to-emerald-500",
+    glow: "rgba(34,197,94,0.3)",
+  },
+  {
+    phase: "Intermediate",
+    title: "OOP & Async",
+    description: "Classes, encapsulation, promises, async/await, and APIs.",
+    skills: ["OOP", "Data Structures", "APIs", "Async Flow"],
+    icon: "🟡",
+    color: "from-yellow-500 to-amber-500",
+    glow: "rgba(245,158,11,0.3)",
+  },
+  {
+    phase: "Advanced",
+    title: "System & DBs",
+    description: "Database design, auth, testing, concurrency, and architecture.",
+    skills: ["PostgreSQL", "JWT Auth", "Testing", "Concurrency"],
+    icon: "🔵",
+    color: "from-blue-500 to-indigo-500",
+    glow: "rgba(59,130,246,0.3)",
+  },
+  {
+    phase: "Projects",
+    title: "Real Applications",
+    description: "Build, containerize, and deploy full-stack apps with CI/CD.",
+    skills: ["Docker", "FastAPI", "Next.js", "CI/CD"],
+    icon: "🔥",
+    color: "from-orange-500 to-red-500",
+    glow: "rgba(255,107,74,0.3)",
+  },
+  {
+    phase: "Interview Ready",
+    title: "DSA & Mocking",
+    description: "Complex algorithms, system design rounds, and resume review.",
+    skills: ["LeetCode Medium", "System Design", "Mock Interviews"],
+    icon: "🎓",
+    color: "from-purple-500 to-violet-500",
+    glow: "rgba(124,92,255,0.3)",
+  },
+];
+
+function GlobalRoadmapTimeline() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <div ref={ref} className="mb-24 relative">
+      {/* Horizontal Line on Desktop */}
+      <div className="absolute top-[28px] left-[32px] right-[32px] h-[3px] bg-white/[0.06] hidden lg:block overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={inView ? { width: "100%" } : {}}
+          transition={{ duration: 1.8, ease: "easeInOut" }}
+          className="h-full bg-gradient-to-r from-[#22C55E] via-[#F59E0B] via-[#3B82F6] via-[#FF6B4A] to-[#7C5CFF]"
+        />
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 relative">
+        {ROADMAP_STEPS.map((step, idx) => (
+          <motion.div
+            key={step.phase}
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: idx * 0.15 }}
+            className="group flex flex-col items-center lg:items-start text-center lg:text-left relative"
+          >
+            {/* Step node indicator */}
+            <div
+              className="z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-[#080c1c] transition-all duration-300 group-hover:scale-110 group-hover:border-white/25 shadow-lg relative overflow-hidden"
+              style={{
+                boxShadow: `0 0 20px ${step.glow}20`,
+              }}
+            >
+              <div
+                className="absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-10"
+                style={{ backgroundImage: `linear-gradient(135deg, ${step.color})` }}
+              />
+              <span className="text-xl relative z-10">{step.icon}</span>
+            </div>
+
+            {/* Content card */}
+            <div className="mt-5 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5 backdrop-blur-xl transition-all duration-300 group-hover:border-white/10 group-hover:bg-white/[0.04] w-full relative">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/40">
+                Phase 0{idx + 1}
+              </span>
+              <h4 className="mt-1 text-base font-bold text-white group-hover:text-[#FF6B4A] transition-colors">
+                {step.phase}
+              </h4>
+              <p className="mt-1 text-xs text-white/55 leading-relaxed font-semibold">
+                {step.title}
+              </p>
+              <p className="mt-2 text-[11px] text-white/40 leading-relaxed">
+                {step.description}
+              </p>
+
+              {/* Skills Tags */}
+              <div className="mt-3 flex flex-wrap justify-center lg:justify-start gap-1">
+                {step.skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-lg bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-mono text-white/50 border border-white/[0.05]"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Section ───────────────────────────────────────────────────────── */
 export default function LearningPathsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -285,6 +407,9 @@ export default function LearningPathsSection() {
             engineers who&apos;ve hired and been hired at top companies.
           </p>
         </motion.div>
+
+        {/* Global Roadmap Timeline */}
+        <GlobalRoadmapTimeline />
 
         {/* Path Cards */}
         <div className="grid gap-6 lg:grid-cols-2">

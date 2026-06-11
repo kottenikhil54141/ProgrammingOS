@@ -1,5 +1,7 @@
 import Navbar from "@/components/navbar/Navbar";
 import HeroSection from "@/components/hero/HeroSection";
+import FloatingBackground from "@/components/layout/FloatingBackground";
+import TrustedBySection from "@/components/trustedby/TrustedBySection";
 import StatsSection from "@/components/stats/StatsSection";
 import FeaturesSection from "@/components/features/FeaturesSection";
 import LearningPathsSection from "@/components/roadmap/LearningPathsSection";
@@ -9,19 +11,20 @@ import FAQSection from "@/components/faq/FAQSection";
 import Footer from "@/components/footer/Footer";
 
 export const metadata = {
-  title: "CodeVerseAI — Become an Engineer, Not Just a Learner",
+  title: "NIK's AI — Become an Engineer, Not Just a Learner",
   description:
-    "Learn Python and JavaScript through live code execution, AI-powered tutoring, real-world projects, and structured roadmaps. Join 25,000+ engineers on CodeVerseAI.",
+    "Learn Python and JavaScript through live code execution, AI-powered tutoring, real-world projects, and structured roadmaps. Join 25,000+ engineers on NIK's AI.",
 };
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white overflow-x-hidden">
-      {/* Fixed ambient background mesh — rendered once for the entire page */}
-      <div className="ambient-bg" aria-hidden="true" />
+    <main className="min-h-screen bg-[#050816] text-white overflow-x-hidden relative">
+      {/* Floating interactive background */}
+      <FloatingBackground />
 
       <Navbar />
       <HeroSection />
+      <TrustedBySection />
       <StatsSection />
       <FeaturesSection />
       <LearningPathsSection />
