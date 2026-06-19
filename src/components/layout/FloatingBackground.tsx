@@ -18,15 +18,19 @@ export default function FloatingBackground() {
   useEffect(() => {
     setMounted(true);
 
+    // Skip tracking mouse moves on mobile/touch screens to avoid redraw jank
+    const supportsHover = window.matchMedia("(hover: hover)").matches;
+    if (!supportsHover) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!bgRef.current) return;
       // Calculate normalized mouse positions (-0.5 to 0.5)
       const x = (e.clientX / window.innerWidth) - 0.5;
       const y = (e.clientY / window.innerHeight) - 0.5;
 
-      // Map to pixel movements (max offset 60px)
-      mouseX.set(x * 60);
-      mouseY.set(y * 60);
+      // Map to pixel movements (max offset 40px for subtlety)
+      mouseX.set(x * 40);
+      mouseY.set(y * 40);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -40,47 +44,51 @@ export default function FloatingBackground() {
   return (
     <div
       ref={bgRef}
-      className="pointer-events-none fixed inset-0 -z-50 overflow-hidden bg-[#050816]"
+      className="pointer-events-none fixed inset-0 -z-50 overflow-hidden bg-bg transition-colors duration-300"
       aria-hidden="true"
     >
       {/* Mesh Gradient / Floating Blobs */}
       <motion.div
-        style={{ x: springX, y: springY }}
+        style={{ x: springX, y: springY, willChange: "transform" }}
         className="absolute inset-0 flex items-center justify-center"
       >
         {/* Blob 1: Orange-Red Ambient Glow */}
         <div
-          className="absolute -top-[10%] left-[10%] h-[500px] w-[500px] rounded-full opacity-[0.15] mix-blend-screen blur-[120px]"
+          className="absolute -top-[10%] left-[10%] h-[500px] w-[500px] rounded-full opacity-[0.06] dark:opacity-[0.15] mix-blend-multiply dark:mix-blend-screen blur-[120px]"
           style={{
             background: "radial-gradient(circle, #FF6B4A 0%, rgba(255,107,74,0) 70%)",
             animation: "floatSlow1 28s ease-in-out infinite",
+            willChange: "transform",
           }}
         />
 
         {/* Blob 2: Violet Accent Glow */}
         <div
-          className="absolute right-[10%] top-[20%] h-[600px] w-[600px] rounded-full opacity-[0.18] mix-blend-screen blur-[140px]"
+          className="absolute right-[10%] top-[20%] h-[600px] w-[600px] rounded-full opacity-[0.08] dark:opacity-[0.18] mix-blend-multiply dark:mix-blend-screen blur-[140px]"
           style={{
             background: "radial-gradient(circle, #7C5CFF 0%, rgba(124,92,255,0) 70%)",
             animation: "floatSlow2 35s ease-in-out infinite",
+            willChange: "transform",
           }}
         />
 
         {/* Blob 3: Soft Teal/Blue Secondary Glow */}
         <div
-          className="absolute bottom-[10%] left-[25%] h-[550px] w-[550px] rounded-full opacity-[0.12] mix-blend-screen blur-[130px]"
+          className="absolute bottom-[10%] left-[25%] h-[550px] w-[550px] rounded-full opacity-[0.05] dark:opacity-[0.12] mix-blend-multiply dark:mix-blend-screen blur-[130px]"
           style={{
             background: "radial-gradient(circle, #14B8A6 0%, rgba(20,184,166,0) 70%)",
             animation: "floatSlow3 42s ease-in-out infinite",
+            willChange: "transform",
           }}
         />
 
         {/* Blob 4: Deep Violet Center Glow */}
         <div
-          className="absolute -bottom-[10%] right-[20%] h-[500px] w-[500px] rounded-full opacity-[0.15] mix-blend-screen blur-[120px]"
+          className="absolute -bottom-[10%] right-[20%] h-[500px] w-[500px] rounded-full opacity-[0.06] dark:opacity-[0.15] mix-blend-multiply dark:mix-blend-screen blur-[120px]"
           style={{
             background: "radial-gradient(circle, #7C5CFF 0%, rgba(124,92,255,0) 70%)",
             animation: "floatSlow1 30s ease-in-out infinite alternate",
+            willChange: "transform",
           }}
         />
       </motion.div>
@@ -96,21 +104,7 @@ export default function FloatingBackground() {
         }}
       />
 
-      {/* Local floating blob animations */}
-      <style jsx global>{`
-        @keyframes floatSlow1 {
-          0%, 100% { transform: translate(0px, 0px) scale(1); }
-          50% { transform: translate(40px, 60px) scale(1.1); }
-        }
-        @keyframes floatSlow2 {
-          0%, 100% { transform: translate(0px, 0px) scale(1.05); }
-          50% { transform: translate(-50px, -40px) scale(0.95); }
-        }
-        @keyframes floatSlow3 {
-          0%, 100% { transform: translate(0px, 0px) scale(1); }
-          50% { transform: translate(60px, -50px) scale(1.08); }
-        }
-      `}</style>
+      {/* floatSlow1/2/3 keyframes are defined in globals.css */}
     </div>
   );
 }

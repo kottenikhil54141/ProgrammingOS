@@ -190,7 +190,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/[0.07] bg-[#080c1c] transition-all duration-500 hover:border-white/15 hover:-translate-y-1 hover:shadow-2xl"
+      className="group relative flex flex-col overflow-hidden rounded-3xl border border-border-subtle bg-surface transition-all duration-500 hover:border-border-medium hover:-translate-y-1 hover:shadow-2xl"
       style={{
         boxShadow: hovered ? `0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px ${project.accentColor}20` : undefined,
       }}
@@ -249,13 +249,13 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </span>
         </div>
 
-        <h3 className="text-base font-bold text-white mb-1.5">{project.title}</h3>
-        <p className="text-xs text-white/50 leading-relaxed mb-4 flex-1">{project.description}</p>
+        <h3 className="text-base font-bold text-text mb-1.5">{project.title}</h3>
+        <p className="text-xs text-muted leading-relaxed mb-4 flex-1">{project.description}</p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {project.tags.map((tag) => (
-            <span key={tag} className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-xs text-white/40">
+            <span key={tag} className="rounded-xl border border-border-subtle bg-surface/50 px-2.5 py-1 text-xs text-muted">
               {tag}
             </span>
           ))}
@@ -263,7 +263,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-white/[0.06] pt-3">
-          <div className="flex items-center gap-4 text-xs text-white/35">
+          <div className="flex items-center gap-4 text-xs text-muted">
             <span className="flex items-center gap-1">
               <Star className="h-3 w-3" />
               {project.stars.toLocaleString()}
@@ -308,32 +308,32 @@ export default function ProjectsSection() {
           className="mb-12 text-center"
         >
           <SectionLabel>Real Projects</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Build things that{" "}
             <span className="gradient-text-primary">matter</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50 max-w-xl mx-auto">
+          <p className="mt-4 text-subtitle text-muted max-w-xl mx-auto">
             Every project is portfolio-ready, industry-relevant, and comes with a guided walkthrough and code review.
           </p>
         </motion.div>
 
-        {/* Filter Tabs */}
+        {/* Filter Tabs - scrollable on mobile */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex justify-center mb-10"
+          className="flex justify-center mb-8 sm:mb-10 overflow-x-auto px-4"
         >
-          <div className="inline-flex items-center gap-1 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-1.5">
+          <div className="inline-flex items-center gap-1 rounded-2xl border border-border-subtle bg-surface/50 p-1.5 shrink-0">
             {(["All", "Python", "JavaScript", "Both"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
                 className={cn(
-                  "rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
+                  "rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap",
                   filter === f
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/40 hover:text-white/70"
+                    ? "bg-surface text-text shadow-sm"
+                    : "text-muted hover:text-text"
                 )}
               >
                 {f}
@@ -343,7 +343,7 @@ export default function ProjectsSection() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project, i) => (
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
@@ -356,10 +356,10 @@ export default function ProjectsSection() {
           transition={{ delay: 0.6 }}
           className="mt-12 text-center"
         >
-          <p className="text-sm text-white/40 mb-4">
+          <p className="text-sm text-muted mb-4">
             50+ more projects across Python, JavaScript, SQL, DevOps, and AI.
           </p>
-          <button className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white/80 transition-all hover:bg-white/[0.08] hover:text-white hover:border-white/20">
+          <button className="inline-flex items-center gap-2 rounded-2xl border border-border-subtle bg-surface/50 px-6 py-3 text-sm font-semibold text-text/80 transition-all hover:bg-surface hover:text-text hover:border-border-medium">
             <GitBranch className="h-4 w-4" />
             View All Projects
           </button>

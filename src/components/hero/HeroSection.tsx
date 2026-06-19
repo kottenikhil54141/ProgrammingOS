@@ -5,6 +5,9 @@ import { motion, useInView } from "framer-motion";
 import AnimatedTerminal from "@/components/terminal/AnimatedTerminal";
 import GradientText from "@/components/ui/GradientText";
 import { ArrowRight, Play, GitBranch, Star } from "lucide-react";
+import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/lib/auth-context";
 
 /* ─── Floating Orbs ────────────────────────────────────────────────── */
 function FloatingOrbs() {
@@ -17,6 +20,7 @@ function FloatingOrbs() {
         style={{
           background: "radial-gradient(circle, rgba(124,92,255,0.18) 0%, transparent 70%)",
           filter: "blur(40px)",
+          willChange: "transform",
         }}
       />
       <motion.div
@@ -26,6 +30,7 @@ function FloatingOrbs() {
         style={{
           background: "radial-gradient(circle, rgba(255,107,74,0.13) 0%, transparent 70%)",
           filter: "blur(50px)",
+          willChange: "transform",
         }}
       />
       <motion.div
@@ -35,6 +40,7 @@ function FloatingOrbs() {
         style={{
           background: "radial-gradient(circle, rgba(255,153,102,0.10) 0%, transparent 70%)",
           filter: "blur(30px)",
+          willChange: "transform",
         }}
       />
       <div className="absolute inset-0 grid-texture opacity-40" />
@@ -119,7 +125,7 @@ function TypewriterHeadline({ start }: { start: boolean }) {
     <h1 className="text-hero font-black leading-[1.04] tracking-[-0.03em]">
       {/* Line 1 */}
       <div className="block">
-        <span className="text-white">{LINE1_PLAIN.slice(0, plainVisible)}</span>
+        <span className="text-text">{LINE1_PLAIN.slice(0, plainVisible)}</span>
 
         {gradientVisible > 0 && (
           <span className="bg-gradient-to-r from-[#FF6B4A] via-[#FF9966] to-[#7C5CFF] bg-clip-text text-transparent">
@@ -135,7 +141,7 @@ function TypewriterHeadline({ start }: { start: boolean }) {
       {/* Line 2 */}
       {line2Revealed.length > 0 && (
         <div className="block mt-1">
-          <span className="text-white/25">{line2Revealed}</span>
+          <span className="text-muted/40">{line2Revealed}</span>
           {!cursorOnLine1 && (
             <span className={`cursor-blink ml-0.5 ${cursorColor}`}>|</span>
           )}
@@ -161,7 +167,7 @@ function SocialProof() {
         {AVATARS.map((a, i) => (
           <div
             key={i}
-            className={`h-8 w-8 rounded-full bg-gradient-to-br ${a.bg} ring-2 ring-[#050816] flex items-center justify-center text-[10px] font-bold text-white`}
+            className={`h-8 w-8 rounded-full bg-gradient-to-br ${a.bg} ring-2 ring-bg flex items-center justify-center text-[10px] font-bold text-white`}
           >
             {a.initials}
           </div>
@@ -173,8 +179,8 @@ function SocialProof() {
             <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
           ))}
         </div>
-        <p className="text-xs text-white/50 mt-0.5">
-          Trusted by <span className="text-white/80 font-semibold">25,000+</span> developers
+        <p className="text-xs text-muted mt-0.5">
+          Trusted by <span className="text-text/80 font-semibold">25,000+</span> developers
         </p>
       </div>
     </div>
@@ -191,6 +197,7 @@ const TECH_BADGES = [
 
 /* ─── Hero Section ─────────────────────────────────────────────────── */
 export default function HeroSection() {
+  const { isAuthenticated } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true });
 
@@ -207,11 +214,11 @@ export default function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative overflow-hidden px-4 pb-24 pt-16 sm:px-6 sm:pt-20 lg:px-8 lg:pb-32 lg:pt-28"
+      className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8 lg:pb-32 lg:pt-28"
     >
       <FloatingOrbs />
 
-      <div className="mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 sm:gap-16 lg:grid-cols-2">
         {/* ── LEFT: Content ── */}
         <div>
           {/* Label pill — fades in immediately */}
@@ -219,10 +226,10 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#FF6B4A]/25 bg-[#FF6B4A]/[0.06] px-4 py-2 text-sm text-[#FF6B4A]">
-              <span className="relative flex h-2 w-2">
+            <div className="inline-flex items-center gap-2 sm:gap-2.5 rounded-full border border-[#FF6B4A]/25 bg-[#FF6B4A]/[0.06] px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-[#FF6B4A]">
+              <span className="relative flex h-2 w-2 shrink-0">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-[#FF6B4A] opacity-75 animate-ping" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FF6B4A]" />
               </span>
@@ -242,7 +249,7 @@ export default function HeroSection() {
             {/* Description */}
             <motion.p
               variants={fadeUp}
-              className="mt-7 max-w-lg text-[17px] leading-[1.8] text-white/55"
+              className="mt-5 sm:mt-7 max-w-lg text-[14px] sm:text-[16px] lg:text-[17px] leading-[1.8] text-muted"
             >
               Learn{" "}
               <GradientText variant="primary" className="font-semibold">
@@ -259,32 +266,36 @@ export default function HeroSection() {
             {/* CTA Buttons */}
             <motion.div
               variants={fadeUp}
-              className="mt-9 flex flex-col gap-3.5 sm:flex-row sm:items-center"
+              className="mt-7 sm:mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <button className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-7 py-4 font-semibold text-white shadow-[0_8px_32px_rgba(255,107,74,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(255,107,74,0.45)] active:translate-y-0 active:scale-[0.98]">
-                <Play className="h-4 w-4 fill-white" />
-                Start Learning Free
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              </button>
+              <Link href={isAuthenticated ? ROUTES.DASHBOARD : ROUTES.SIGNUP} className="w-full sm:w-auto">
+                <button className="w-full group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-6 sm:px-7 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-white shadow-[0_8px_32px_rgba(255,107,74,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(255,107,74,0.45)] active:translate-y-0 active:scale-[0.98]">
+                  <Play className="h-4 w-4 fill-white" />
+                  {isAuthenticated ? "Go to Dashboard" : "Start Learning Free"}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                </button>
+              </Link>
 
-              <button className="inline-flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 font-semibold text-white/80 transition-all duration-300 hover:bg-white/[0.08] hover:text-white hover:border-white/20 hover:-translate-y-0.5 active:translate-y-0">
-                <GitBranch className="h-4 w-4" />
-                Explore Projects
-              </button>
+              <a href="#projects" className="w-full sm:w-auto">
+                <button className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl border border-border-subtle bg-surface px-6 sm:px-7 py-3.5 sm:py-4 text-sm sm:text-base font-semibold text-text/80 transition-all duration-300 hover:bg-surface/80 hover:text-text hover:border-border-medium hover:-translate-y-0.5 active:translate-y-0">
+                  <GitBranch className="h-4 w-4" />
+                  Explore Projects
+                </button>
+              </a>
             </motion.div>
 
             {/* Social Proof */}
-            <motion.div variants={fadeUp} className="mt-10">
+            <motion.div variants={fadeUp} className="mt-8 sm:mt-10">
               <SocialProof />
             </motion.div>
 
             {/* Tech Badges */}
-            <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-2">
+            <motion.div variants={fadeUp} className="mt-5 sm:mt-6 flex flex-wrap gap-2">
               {TECH_BADGES.map((badge) => (
                 <span
                   key={badge.label}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium backdrop-blur-sm bg-white/[0.02] ${badge.color}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium backdrop-blur-sm bg-surface ${badge.color}`}
                 >
                   {badge.emoji} {badge.label}
                 </span>
@@ -295,32 +306,32 @@ export default function HeroSection() {
 
         {/* ── RIGHT: Terminal ── */}
         <motion.div
-          initial={{ opacity: 0, x: 40, filter: "blur(8px)" }}
-          animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
+          initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
+          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
           transition={{ duration: 0.85, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="relative"
         >
           <div className="absolute -inset-4 rounded-[40px] bg-gradient-to-br from-[#7C5CFF]/20 to-[#FF6B4A]/20 blur-2xl opacity-60 -z-10" />
           <AnimatedTerminal />
 
-          {/* Floating stat pills */}
+          {/* Floating stat pills — hidden on mobile to avoid overflow */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 1, duration: 0.5 }}
-            className="absolute -bottom-5 -left-5 glass rounded-2xl px-4 py-3 hidden sm:block"
+            className="absolute -bottom-5 -left-5 glass rounded-2xl px-4 py-3 hidden md:block"
           >
-            <div className="text-[11px] text-white/40 font-mono uppercase tracking-widest">Streak</div>
-            <div className="text-lg font-bold text-white mt-0.5">🔥 21 Days</div>
+            <div className="text-[11px] text-muted font-mono uppercase tracking-widest">Streak</div>
+            <div className="text-lg font-bold text-text mt-0.5">🔥 21 Days</div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 1.2, duration: 0.5 }}
-            className="absolute -top-5 -right-5 glass rounded-2xl px-4 py-3 hidden sm:block"
+            className="absolute -top-5 -right-5 glass rounded-2xl px-4 py-3 hidden md:block"
           >
-            <div className="text-[11px] text-white/40 font-mono uppercase tracking-widest">XP Earned</div>
+            <div className="text-[11px] text-muted font-mono uppercase tracking-widest">XP Earned</div>
             <div className="text-lg font-bold text-[#FF6B4A] mt-0.5">+2,450 XP</div>
           </motion.div>
         </motion.div>

@@ -65,7 +65,7 @@ function readDB(): UserRecord[] {
         streak: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        theme: "dark",
+        theme: "light",
         isVerified: true
       });
 
@@ -82,7 +82,7 @@ function readDB(): UserRecord[] {
         streak: 2,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        theme: "dark",
+        theme: "light",
         isVerified: true
       });
 

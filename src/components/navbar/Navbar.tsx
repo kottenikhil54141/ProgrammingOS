@@ -26,11 +26,11 @@ import { useTheme } from "@/components/theme-provider";
 
 /* ─── Nav Items ────────────────────────────────────────────────────── */
 const navItems = [
-  { label: "Learn",     href: "#", icon: BookOpen },
-  { label: "Practice",  href: "#", icon: Code2 },
-  { label: "Projects",  href: "#", icon: FolderKanban },
-  { label: "Exam",      href: "#", icon: GraduationCap },
-  { label: "Developer", href: "#", icon: Terminal },
+  { label: "Learn",     href: ROUTES.SIGNUP, icon: BookOpen },
+  { label: "Practice",  href: ROUTES.SIGNUP, icon: Code2 },
+  { label: "Projects",  href: "/#projects",  icon: FolderKanban },
+  { label: "Exam",      href: ROUTES.SIGNUP, icon: GraduationCap },
+  { label: "Developer", href: ROUTES.SIGNUP, icon: Terminal },
 ];
 
 /* ─── Search Palette ───────────────────────────────────────────────── */
@@ -77,19 +77,19 @@ function SearchPalette({ onClose }: { onClose: () => void }) {
         exit={{ opacity: 0, y: -20, scale: 0.97 }}
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg mx-4 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1020]/95 shadow-2xl backdrop-blur-2xl"
+        className="w-full max-w-lg mx-4 overflow-hidden rounded-3xl border border-border-medium bg-surface/95 shadow-2xl backdrop-blur-2xl"
       >
         {/* Input */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-          <Search className="h-5 w-5 text-white/40 shrink-0" />
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-border-subtle">
+          <Search className="h-5 w-5 text-muted shrink-0" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search courses, topics, projects..."
-            className="flex-1 bg-transparent text-white placeholder-white/30 outline-none text-sm"
+            className="flex-1 bg-transparent text-text placeholder-muted/50 outline-none text-sm"
           />
-          <kbd className="text-xs text-white/30 border border-white/10 rounded-lg px-2 py-1 font-mono">
+          <kbd className="text-xs text-muted border border-border-subtle rounded-lg px-2 py-1 font-mono">
             ESC
           </kbd>
         </div>
@@ -97,19 +97,19 @@ function SearchPalette({ onClose }: { onClose: () => void }) {
         {/* Results */}
         <div className="py-2 max-h-[340px] overflow-y-auto">
           {filtered.length === 0 ? (
-            <div className="py-8 text-center text-sm text-white/30">No results found</div>
+            <div className="py-8 text-center text-sm text-muted">No results found</div>
           ) : (
             filtered.map((item) => (
               <button
                 key={item.label}
                 onClick={onClose}
-                className="w-full flex items-center gap-4 px-5 py-3 hover:bg-white/[0.05] transition-colors text-left"
+                className="w-full flex items-center gap-4 px-5 py-3 hover:bg-surface/50 transition-colors text-left"
               >
                 <span className="text-xl">{item.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white/90 truncate">{item.label}</div>
+                  <div className="text-sm font-medium text-text/90 truncate">{item.label}</div>
                 </div>
-                <span className="text-xs text-white/30 border border-white/10 rounded-full px-2 py-0.5 shrink-0">
+                <span className="text-xs text-muted border border-border-subtle rounded-full px-2 py-0.5 shrink-0">
                   {item.tag}
                 </span>
               </button>
@@ -117,7 +117,7 @@ function SearchPalette({ onClose }: { onClose: () => void }) {
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-white/[0.06] flex items-center gap-4 text-xs text-white/25">
+        <div className="px-5 py-3 border-t border-border-subtle flex items-center gap-4 text-xs text-muted">
           <span className="flex items-center gap-1">
             <Command className="h-3 w-3" /> K to open
           </span>
@@ -149,9 +149,9 @@ function ThemeToggle() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 backdrop-blur-xl transition-all duration-300 hover:bg-white/10 hover:border-white/20"
+        className="flex items-center gap-2 rounded-2xl border border-border-subtle bg-surface/50 px-3 py-2 text-sm text-text/90 backdrop-blur-xl transition-all duration-300 hover:bg-surface hover:border-border-medium"
       >
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/10">
+        <span className="grid h-8 w-8 place-items-center rounded-xl bg-surface/80 border border-border-subtle">
           <ActiveIcon className="h-4 w-4" />
         </span>
         <span className="hidden capitalize sm:inline">{label}</span>
@@ -167,7 +167,7 @@ function ThemeToggle() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.16 }}
-            className="absolute right-0 top-[calc(100%+10px)] z-50 w-44 overflow-hidden rounded-2xl border border-white/10 bg-[#0b1020]/95 shadow-2xl backdrop-blur-2xl"
+            className="absolute right-0 top-[calc(100%+10px)] z-50 w-44 overflow-hidden rounded-2xl border border-border-subtle bg-surface/95 shadow-2xl backdrop-blur-2xl"
           >
             {[
               { value: "light",  label: "Light",  icon: SunMedium },
@@ -180,8 +180,8 @@ function ThemeToggle() {
                   key={item.value}
                   onClick={() => { setTheme(item.value as "light" | "dark" | "system"); setOpen(false); }}
                   className={cn(
-                    "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-white/10",
-                    theme === item.value ? "text-[#FF6B4A]" : "text-white/75"
+                    "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-surface/80",
+                    theme === item.value ? "text-[#FF6B4A] font-semibold" : "text-muted"
                   )}
                 >
                   <Icon className="h-4 w-4" />
@@ -199,20 +199,64 @@ function ThemeToggle() {
   );
 }
 
+/* ─── Mobile Theme Toggle ─────────────────────────────────────────── */
+function MobileThemeToggle() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="w-full space-y-2">
+      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted block text-center">
+        Appearance Theme
+      </span>
+      <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border-subtle bg-surface/30 p-1">
+        {[
+          { value: "light", label: "Light", icon: SunMedium },
+          { value: "dark", label: "Dark", icon: Moon },
+          { value: "system", label: "System", icon: Monitor },
+        ].map((item) => {
+          const Icon = item.icon;
+          const active = theme === item.value;
+          return (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setTheme(item.value as "light" | "dark" | "system")}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-semibold transition-all duration-300",
+                active
+                  ? "bg-[#FF6B4A]/10 text-[#FF6B4A] border border-[#FF6B4A]/20 shadow-sm"
+                  : "text-muted hover:text-text hover:bg-surface/50 border border-transparent"
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Logo ─────────────────────────────────────────────────────────── */
 function Logo() {
   return (
-    <Link href={ROUTES.HOME} className="flex items-center gap-3 group">
+    <Link href={ROUTES.HOME} prefetch={true} className="flex items-center gap-3 group">
       <div className="relative grid h-11 w-11 place-items-center rounded-2xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B4A] to-[#7C5CFF] opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B4A] to-[#7C5CFF] opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-300" />
         <Zap className="relative z-10 h-5 w-5 text-white" strokeWidth={2.5} />
       </div>
       <div className="leading-tight">
-        <div className="text-[15px] font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
+        <div className="text-[15px] font-bold tracking-tight text-text group-hover:text-text/90 transition-colors">
           NIK's <span className="bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] bg-clip-text text-transparent">AI</span>
         </div>
-        <div className="text-[11px] text-white/40 font-mono tracking-wider">
+        <div className="text-[11px] text-muted font-mono tracking-wider">
           Python · JavaScript
         </div>
       </div>
@@ -253,14 +297,14 @@ export default function Navbar() {
         className={cn(
           "sticky top-0 z-40 transition-all duration-500",
           scrolled
-            ? "border-b border-white/[0.07] bg-[#050816]/85 backdrop-blur-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)]"
+            ? "border-b border-border-subtle bg-bg/85 backdrop-blur-2xl"
             : "border-b border-transparent bg-transparent"
         )}
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 sm:h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Logo />
 
           {/* Desktop Nav */}
@@ -271,7 +315,7 @@ export default function Navbar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white/60 transition-all duration-200 hover:bg-white/[0.05] hover:text-white"
+                  className="group flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-muted transition-all duration-200 hover:bg-surface hover:text-text"
                 >
                   <Icon className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100 transition-opacity" />
                   {item.label}
@@ -285,11 +329,11 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="flex h-10 items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 text-sm text-white/40 transition-all hover:bg-white/[0.07] hover:text-white/70 hover:border-white/20"
+              className="flex h-10 items-center gap-2.5 rounded-xl border border-border-subtle bg-surface/40 px-3 text-sm text-muted transition-all hover:bg-surface hover:text-text hover:border-border-medium"
             >
               <Search className="h-4 w-4" />
               <span className="hidden xl:block">Search...</span>
-              <kbd className="hidden xl:flex items-center gap-0.5 text-xs border border-white/10 rounded-lg px-1.5 py-0.5 font-mono text-white/25">
+              <kbd className="hidden xl:flex items-center gap-0.5 text-xs border border-border-subtle rounded-lg px-1.5 py-0.5 font-mono text-muted">
                 <Command className="h-2.5 w-2.5" />K
               </kbd>
             </button>
@@ -298,21 +342,24 @@ export default function Navbar() {
 
             <Link
               href={ROUTES.LOGIN}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/80 transition-all hover:bg-white/[0.08] hover:text-white hover:border-white/20"
+              prefetch={true}
+              className="rounded-xl border border-border-subtle bg-surface px-4 py-2 text-sm font-semibold text-text transition-all hover:bg-surface/80 hover:border-border-medium"
             >
               Login
             </Link>
 
-            <PrimaryButton className="h-10 px-5 text-sm rounded-xl shimmer">
-              Sign Up Free
-            </PrimaryButton>
+            <Link href={ROUTES.SIGNUP} prefetch={true}>
+              <PrimaryButton className="h-10 px-5 text-sm rounded-xl shimmer">
+                Sign Up Free
+              </PrimaryButton>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-white/90 backdrop-blur-xl transition-all hover:bg-white/10 lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-2xl border border-border-subtle bg-surface text-text backdrop-blur-xl transition-all hover:bg-surface/80 lg:hidden"
           >
             <AnimatePresence mode="wait">
               {mobileOpen ? (
@@ -336,13 +383,13 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden border-t border-white/[0.06] bg-[#050816]/95 backdrop-blur-2xl lg:hidden"
+              className="overflow-hidden border-t border-border-subtle bg-bg/95 backdrop-blur-2xl lg:hidden"
             >
               <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6">
                 {/* Search */}
                 <button
                   onClick={() => { setSearchOpen(true); setMobileOpen(false); }}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/50"
+                  className="flex items-center gap-3 rounded-2xl border border-border-subtle bg-surface px-4 py-3 text-sm text-muted"
                 >
                   <Search className="h-4 w-4" />
                   <span>Search courses, topics...</span>
@@ -362,9 +409,9 @@ export default function Navbar() {
                         <Link
                           href={item.href}
                           onClick={() => setMobileOpen(false)}
-                          className="flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 text-sm font-medium text-white/75 transition-colors hover:bg-white/[0.07] hover:text-white"
+                          className="flex items-center gap-3 rounded-2xl border border-border-subtle bg-surface/40 px-4 py-3.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-text"
                         >
-                          <Icon className="h-4 w-4 text-white/40" />
+                          <Icon className="h-4 w-4 text-muted" />
                           {item.label}
                         </Link>
                       </motion.div>
@@ -376,18 +423,26 @@ export default function Navbar() {
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <Link
                     href={ROUTES.LOGIN}
+                    prefetch={true}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-center text-sm font-semibold text-white/80"
+                    className="rounded-2xl border border-border-subtle bg-surface px-4 py-3.5 text-center text-sm font-semibold text-text"
                   >
                     Login
                   </Link>
-                  <PrimaryButton className="py-3.5 rounded-2xl" onClick={() => setMobileOpen(false)}>
-                    Sign Up Free
-                  </PrimaryButton>
+                  <Link
+                    href={ROUTES.SIGNUP}
+                    prefetch={true}
+                    onClick={() => setMobileOpen(false)}
+                    className="block"
+                  >
+                    <PrimaryButton className="w-full py-3.5 rounded-2xl">
+                      Sign Up Free
+                    </PrimaryButton>
+                  </Link>
                 </div>
 
-                <div className="flex justify-center pt-1">
-                  <ThemeToggle />
+                <div className="pt-2">
+                  <MobileThemeToggle />
                 </div>
               </div>
             </motion.div>

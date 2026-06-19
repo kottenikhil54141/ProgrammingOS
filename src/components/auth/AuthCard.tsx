@@ -16,13 +16,7 @@ export default function AuthCard({ children, title, subtitle }: AuthCardProps) {
       className="w-full max-w-md"
     >
       <div
-        className="relative overflow-hidden rounded-3xl p-8 sm:p-10"
-        style={{
-          background: "rgba(8, 12, 28, 0.85)",
-          border: "1px solid rgba(255, 255, 255, 0.09)",
-          backdropFilter: "blur(32px)",
-          boxShadow: "0 32px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
-        }}
+        className="relative overflow-hidden rounded-3xl p-8 sm:p-10 border border-border-subtle bg-surface/85 backdrop-blur-2xl shadow-elevated"
       >
         {/* Top glow */}
         <div
@@ -35,10 +29,10 @@ export default function AuthCard({ children, title, subtitle }: AuthCardProps) {
 
         {/* Header */}
         <div className="mb-8 text-center relative z-10">
-          <h1 className="text-2xl font-black text-white tracking-tight">
+          <h1 className="text-2xl font-black text-text tracking-tight">
             {title}
           </h1>
-          <p className="mt-1.5 text-sm text-white/45">
+          <p className="mt-1.5 text-sm text-muted">
             {subtitle}
           </p>
         </div>

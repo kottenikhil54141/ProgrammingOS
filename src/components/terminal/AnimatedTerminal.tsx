@@ -471,7 +471,7 @@ export default function AnimatedTerminal() {
   return (
     <div className="liquid-glass rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
       {/* ── Chrome Bar ── */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07] bg-white/[0.02]">
+      <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-4 border-b border-white/[0.07] bg-white/[0.02] gap-2">
         {/* Traffic lights */}
         <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded-full bg-[#FF5F57] shadow-[0_0_6px_rgba(255,95,87,0.5)]" />
@@ -485,14 +485,14 @@ export default function AnimatedTerminal() {
           <span className="font-mono text-xs text-white/70">{config.filename}</span>
         </div>
 
-        {/* Language switcher */}
-        <div className="flex items-center gap-1 rounded-xl bg-black/30 p-1">
+        {/* Language switcher — scrollable on mobile */}
+        <div className="flex items-center gap-0.5 sm:gap-1 rounded-xl bg-black/30 p-1 overflow-x-auto max-w-[140px] sm:max-w-none no-scrollbar">
           {(Object.keys(LANGUAGES) as Language[]).map((lang) => (
             <button
               key={lang}
               onClick={() => dispatch({ type: "SET_LANGUAGE", language: lang })}
               className={cn(
-                "rounded-lg px-3 py-1 text-xs font-medium transition-all duration-200",
+                "rounded-lg px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-medium transition-all duration-200 shrink-0",
                 state.language === lang
                   ? "bg-white/10 text-white shadow-sm"
                   : "text-white/40 hover:text-white/70"
@@ -505,8 +505,8 @@ export default function AnimatedTerminal() {
       </div>
 
       {/* ── Code Editor Panel ── */}
-      <div className="p-5 min-h-[240px] bg-[#060d1a]">
-        <div className="font-mono text-sm leading-7 space-y-0">
+      <div className="p-4 sm:p-5 min-h-[200px] sm:min-h-[240px] bg-[#060d1a]">
+        <div className="font-mono text-xs sm:text-sm leading-6 sm:leading-7 space-y-0">
           {/* Fully typed lines */}
           {state.completedLines.map((chars, lineIdx) => (
             <motion.div

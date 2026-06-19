@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Zap, ArrowUpRight, Heart } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/lib/auth-context";
 
 /* ─── Data ──────────────────────────────────────────────────────────── */
 const FOOTER_LINKS = {
@@ -78,7 +79,7 @@ function NewsletterForm() {
         Weekly engineering insights
       </p>
       <form
-        className="flex gap-2"
+        className="flex flex-col sm:flex-row gap-2"
         onSubmit={(e) => e.preventDefault()}
       >
         <input
@@ -114,7 +115,7 @@ function StatusBar() {
 
 /* ─── Footer ─────────────────────────────────────────────────────────── */
 export default function Footer() {
-  const year = new Date().getFullYear();
+  const year = 2026;
 
   return (
     <footer className="relative overflow-hidden border-t border-white/[0.06]">
@@ -135,7 +136,7 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
-          className="relative overflow-hidden rounded-3xl my-16 p-8 sm:p-12 text-center"
+          className="relative overflow-hidden rounded-3xl my-12 sm:my-16 p-6 sm:p-8 md:p-12 text-center"
           style={{
             background:
               "linear-gradient(135deg, rgba(255,107,74,0.12) 0%, rgba(124,92,255,0.12) 100%)",
@@ -151,7 +152,7 @@ export default function Footer() {
               Free Trial — No Credit Card
             </div>
 
-            <h2 className="text-display mt-4 text-white max-w-2xl mx-auto">
+            <h2 className="text-display mt-4 text-white max-w-2xl mx-auto text-2xl sm:text-4xl">
               Stop watching.{" "}
               <span className="gradient-text-primary">Start building.</span>
             </h2>
@@ -180,9 +181,9 @@ export default function Footer() {
         </motion.div>
 
         {/* Links grid */}
-        <div className="grid grid-cols-2 gap-8 pb-12 sm:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-6 sm:gap-8 pb-10 sm:pb-12 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand column */}
-          <div className="col-span-2 sm:col-span-4 lg:col-span-1">
+          <div className="col-span-2 lg:col-span-1">
             <FooterLogo />
             <p className="mt-4 text-sm text-white/40 leading-relaxed max-w-xs">
               The engineering education platform built for depth. Not for vanity metrics.
@@ -220,7 +221,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col gap-4 border-t border-white/[0.05] py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-white/[0.05] py-5 sm:py-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <p className="text-xs text-white/30">
               © {year} NIK's AI. All rights reserved.

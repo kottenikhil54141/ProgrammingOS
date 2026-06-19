@@ -160,12 +160,13 @@ function FeatureCard({
       }}
     >
       <div
-        className="relative h-full rounded-3xl p-7 transition-all duration-500"
+        className="relative h-full rounded-3xl p-5 sm:p-7 transition-all duration-500"
         style={{
           background: hovered
-            ? `linear-gradient(145deg, ${feature.glowColor} 0%, rgba(5,8,22,0.92) 60%)`
-            : "rgba(11,16,32,0.6)",
+            ? `linear-gradient(145deg, ${feature.glowColor} 0%, var(--color-surface) 60%)`
+            : "var(--color-surface)",
           backdropFilter: "blur(24px)",
+          border: "1px solid var(--color-border-subtle)",
         }}
       >
         {/* Ambient glow blob */}
@@ -180,7 +181,7 @@ function FeatureCard({
         />
 
         {/* Tag */}
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-4 sm:mb-5 flex items-center justify-between">
           <div
             className="inline-flex h-12 w-12 items-center justify-center rounded-2xl"
             style={{
@@ -209,8 +210,8 @@ function FeatureCard({
         </div>
 
         {/* Content */}
-        <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-        <p className="text-sm text-white/55 leading-relaxed mb-5">{feature.description}</p>
+        <h3 className="text-lg font-bold text-text mb-2">{feature.title}</h3>
+        <p className="text-sm text-muted leading-relaxed mb-4 sm:mb-5">{feature.description}</p>
 
         {/* Detail pills */}
         <div className="flex flex-wrap gap-1.5">
@@ -265,11 +266,11 @@ export default function FeaturesSection() {
           className="mb-16 text-center"
         >
           <SectionLabel>Platform Features</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Everything you need to{" "}
             <span className="gradient-text-secondary">go from zero to hired</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50 max-w-2xl mx-auto">
+          <p className="mt-4 text-subtitle text-muted max-w-2xl mx-auto">
             NIK's AI is not a video course. It&apos;s an interactive operating
             system for learning to code — live execution, AI tutoring, projects,
             and progress tracking all in one.
@@ -277,7 +278,7 @@ export default function FeaturesSection() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, i) => (
             <FeatureCard key={feature.title} feature={feature} index={i} />
           ))}

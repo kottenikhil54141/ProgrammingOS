@@ -84,16 +84,16 @@ export default function TrustedBySection() {
   return (
     <section
       ref={sectionRef}
-      className="py-12 relative overflow-hidden border-t border-b border-white/[0.05] bg-white/[0.01]"
+      className="py-10 sm:py-12 relative overflow-hidden border-t border-b border-border-subtle bg-surface/30"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-between">
+        <div className="flex flex-col items-center gap-6 sm:gap-8 lg:flex-row lg:justify-between">
           {/* Label / Context */}
           <div className="shrink-0 text-center lg:text-left">
-            <span className="text-xs font-mono uppercase tracking-widest text-white/30">
+            <span className="text-xs font-mono uppercase tracking-widest text-muted">
               Our Alumni Work At
             </span>
-            <h3 className="text-sm font-semibold text-white/60 mt-1">
+            <h3 className="text-sm font-semibold text-text/60 mt-1">
               Top engineering teams globally
             </h3>
           </div>
@@ -103,16 +103,16 @@ export default function TrustedBySection() {
             variants={containerVariants}
             initial="hidden"
             animate={inView ? "visible" : "hidden"}
-            className="grid grid-cols-3 gap-6 sm:grid-cols-6 lg:gap-10 items-center justify-items-center w-full max-w-3xl"
+            className="grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-6 lg:gap-10 items-center justify-items-center w-full max-w-3xl"
           >
             {PARTNER_COMPANIES.map((company) => (
               <motion.div
                 key={company.name}
                 variants={itemVariants}
-                className="group relative flex items-center justify-center p-4 rounded-xl border border-white/[0.03] bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300 shadow-sm w-full max-w-[120px] aspect-[2/1]"
+                className="group relative flex items-center justify-center p-3 sm:p-4 rounded-xl border border-border-subtle bg-surface/40 hover:border-border-medium hover:bg-surface/80 transition-all duration-300 shadow-sm w-full max-w-[100px] sm:max-w-[120px] aspect-[2/1]"
                 title={company.name}
               >
-                <div className="text-white flex items-center justify-center">
+                <div className="text-text/60 flex items-center justify-center">
                   {company.logo}
                 </div>
               </motion.div>

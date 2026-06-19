@@ -10,24 +10,24 @@ export async function POST() {
 
     if (!refreshCookie?.value) {
       return NextResponse.json(
-        { error: "no_refresh_token" },
-        { status: 401 }
+        { user: null, accessToken: null, error: "no_refresh_token" },
+        { status: 200 }
       );
     }
 
     const payload = await verifyJWT(refreshCookie.value);
     if (!payload || payload.sessionType !== "refresh") {
       return NextResponse.json(
-        { error: "invalid_refresh_token" },
-        { status: 401 }
+        { user: null, accessToken: null, error: "invalid_refresh_token" },
+        { status: 200 }
       );
     }
 
     const user = DBService.getUserById(payload.userId);
     if (!user) {
       return NextResponse.json(
-        { error: "user_not_found" },
-        { status: 401 }
+        { user: null, accessToken: null, error: "user_not_found" },
+        { status: 200 }
       );
     }
 

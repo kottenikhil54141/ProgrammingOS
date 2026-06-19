@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       passwordHash: hash,
       salt,
       role: "user",
-      theme: "dark",
+      theme: "light",
       isVerified: false,
       verificationToken,
       learningPreferences: {

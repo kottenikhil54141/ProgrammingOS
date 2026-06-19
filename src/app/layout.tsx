@@ -91,10 +91,11 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable}`}
+      data-scroll-behavior="smooth"
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#050816" />
+        <meta name="theme-color" content="#F1F5F9" />
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>

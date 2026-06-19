@@ -87,9 +87,9 @@ function StatCard({
     >
       {/* Inner card */}
       <div
-        className="relative h-full rounded-3xl p-7 backdrop-blur-xl overflow-hidden"
+        className="relative h-full rounded-3xl p-5 sm:p-7 backdrop-blur-xl overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, ${stat.glow} 0%, rgba(5,8,22,0.8) 100%)`,
+          background: `linear-gradient(135deg, ${stat.glow} 0%, var(--color-surface) 100%)`,
         }}
       >
         {/* Radial ambient */}
@@ -102,13 +102,13 @@ function StatCard({
         />
 
         {/* Icon */}
-        <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
+        <div className="mb-4 sm:mb-5 inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl text-xl sm:text-2xl"
           style={{ background: `linear-gradient(135deg, ${stat.gradient.replace("from-", "").replace("to-", "")})`, border: `1px solid ${stat.border}` }}>
           {stat.icon}
         </div>
 
         {/* Number */}
-        <div className="text-4xl font-black tracking-tight text-white tabular-nums">
+        <div className="text-3xl sm:text-4xl font-black tracking-tight text-text tabular-nums">
           <CountUp
             end={stat.value}
             duration={2200}
@@ -118,8 +118,8 @@ function StatCard({
         </div>
 
         {/* Label */}
-        <div className="mt-1.5 text-base font-semibold text-white/90">{stat.label}</div>
-        <div className="mt-1 text-sm text-white/45 leading-relaxed">{stat.description}</div>
+        <div className="mt-1.5 text-sm sm:text-base font-semibold text-text/90">{stat.label}</div>
+        <div className="mt-1 text-xs sm:text-sm text-muted leading-relaxed">{stat.description}</div>
 
         {/* Bottom shimmer line */}
         <div
@@ -138,17 +138,17 @@ function TechMarquee() {
   return (
     <div className="relative overflow-hidden py-4">
       {/* Fade masks */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[#050816] to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[#050816] to-transparent" />
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[var(--color-bg)] to-transparent" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[var(--color-bg)] to-transparent" />
 
       <div className="flex marquee-track-left">
         {logos.map((logo, i) => (
           <div
             key={i}
-            className="mx-3 flex shrink-0 items-center gap-2.5 rounded-2xl border border-white/[0.07] bg-white/[0.03] px-5 py-3 backdrop-blur-sm transition-all duration-300 hover:border-white/15 hover:bg-white/[0.06]"
+            className="mx-3 flex shrink-0 items-center gap-2.5 rounded-2xl border border-border-subtle bg-surface/40 px-5 py-3 backdrop-blur-sm transition-all duration-300 hover:border-border-medium hover:bg-surface/80"
           >
             <span className="text-lg">{logo.emoji}</span>
-            <span className="text-sm font-medium text-white/60">{logo.name}</span>
+            <span className="text-sm font-medium text-muted">{logo.name}</span>
           </div>
         ))}
       </div>
@@ -164,7 +164,7 @@ export default function StatsSection() {
   return (
     <section ref={sectionRef} className="section-pad relative overflow-hidden">
       {/* Subtle mid-page glow */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border-subtle to-transparent" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -175,17 +175,17 @@ export default function StatsSection() {
           className="mb-16 text-center"
         >
           <SectionLabel>Trusted Globally</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Numbers that{" "}
             <span className="gradient-text-primary">speak louder</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50 max-w-xl mx-auto">
+          <p className="mt-4 text-subtitle text-muted max-w-xl mx-auto">
             Join a community of engineers who chose substance over shortcuts.
           </p>
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-5 grid-cols-2 lg:grid-cols-4">
           {STATS.map((stat, i) => (
             <StatCard key={stat.label} stat={stat} index={i} />
           ))}
@@ -197,7 +197,7 @@ export default function StatsSection() {
             initial={{ opacity: 0 }}
             animate={headerInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.5 }}
-            className="mb-6 text-center text-xs font-mono uppercase tracking-widest text-white/25"
+            className="mb-6 text-center text-xs font-mono uppercase tracking-widest text-muted/50"
           >
             Technologies you'll master
           </motion.p>
@@ -205,7 +205,7 @@ export default function StatsSection() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border-subtle to-transparent" />
     </section>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/pointer-capture-patch";
 import {
   createContext,
   useContext,
@@ -37,14 +38,16 @@ function applyTheme(resolvedTheme: ResolvedTheme) {
 }
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("system");
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("dark");
+  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light");
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
 
     if (stored === "light" || stored === "dark" || stored === "system") {
       setThemeState(stored);
+    } else {
+      setThemeState("light");
     }
   }, []);
 

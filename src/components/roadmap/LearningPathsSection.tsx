@@ -92,7 +92,7 @@ function NodeIcon({ node, accentColor }: { node: PathNode; accentColor: string }
   if (node.status === "complete")
     return <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: accentColor }} />;
   if (node.status === "locked")
-    return <Lock className="h-3.5 w-3.5 shrink-0 text-white/20" />;
+    return <Lock className="h-3.5 w-3.5 shrink-0 text-muted/30" />;
   return (
     <motion.div
       animate={{ scale: [1, 1.15, 1] }}
@@ -123,16 +123,15 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
       transition={{ duration: 0.7, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] as const }}
       className="relative overflow-hidden rounded-3xl p-px"
       style={{
-        background: `linear-gradient(135deg, ${path.borderColor}, rgba(255,255,255,0.04) 60%)`,
+        background: `linear-gradient(135deg, ${path.borderColor}, var(--color-glass) 60%)`,
       }}
     >
       <div
-        className="relative h-full rounded-3xl overflow-hidden"
-        style={{ background: "rgba(8,12,28,0.95)", backdropFilter: "blur(24px)" }}
+        className="relative h-full rounded-3xl overflow-hidden border border-border-subtle bg-surface/95 backdrop-blur-2xl"
       >
         {/* Header */}
         <div
-          className="px-7 pt-7 pb-5"
+          className="px-5 sm:px-7 pt-5 sm:pt-7 pb-4 sm:pb-5"
           style={{
             background: `linear-gradient(180deg, ${path.glowColor} 0%, transparent 100%)`,
           }}
@@ -146,25 +145,25 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
                 <span>{path.icon}</span>
                 {path.label}
               </div>
-              <h3 className="text-2xl font-black text-white">{path.title}</h3>
+              <h3 className="text-2xl font-black text-text">{path.title}</h3>
             </div>
             <div className="text-right shrink-0 ml-4">
-              <div className="text-xs text-white/35 font-mono">{path.weeks}w track</div>
+              <div className="text-xs text-muted font-mono">{path.weeks}w track</div>
               <div className="text-sm font-bold mt-0.5" style={{ color: accent }}>
                 {path.totalXP.toLocaleString()} XP
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-white/55 leading-relaxed">{path.description}</p>
+          <p className="text-sm text-muted leading-relaxed">{path.description}</p>
 
           {/* Progress bar */}
           <div className="mt-5">
-            <div className="flex justify-between text-xs text-white/35 mb-2 font-mono">
+            <div className="flex justify-between text-xs text-muted mb-2 font-mono">
               <span>{completedCount}/{path.nodes.length} completed</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-white/[0.06]">
+            <div className="h-1.5 w-full rounded-full bg-border-subtle">
               <motion.div
                 initial={{ width: 0 }}
                 animate={inView ? { width: `${progress}%` } : {}}
@@ -177,17 +176,17 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
         </div>
 
         {/* Nodes timeline */}
-        <div className="px-7 pb-7">
+        <div className="px-5 sm:px-7 pb-5 sm:pb-7">
           <div className="relative space-y-0">
             {/* Vertical line */}
-            <div className="absolute left-[7px] top-3 bottom-3 w-px bg-white/[0.06]" />
+            <div className="absolute left-[7px] top-3 bottom-3 w-px bg-border-subtle" />
 
             {path.nodes.map((node, ni) => (
               <div
                 key={node.id}
                 className={cn(
-                  "relative flex items-center gap-4 py-2.5 pl-8 rounded-xl transition-all duration-200",
-                  node.status === "active" && "bg-white/[0.03]",
+                  "relative flex items-center gap-3 sm:gap-4 py-2 sm:py-2.5 pl-7 sm:pl-8 rounded-xl transition-all duration-200",
+                  node.status === "active" && "bg-surface/50",
                   node.status === "locked" && "opacity-50"
                 )}
               >
@@ -202,8 +201,8 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
                     <span
                       className={cn(
                         "text-sm font-medium truncate",
-                        node.status === "complete" ? "text-white/60 line-through" : "text-white/85",
-                        node.status === "active" && "!text-white font-semibold"
+                        node.status === "complete" ? "text-muted line-through" : "text-text/85",
+                        node.status === "active" && "!text-text font-semibold"
                       )}
                     >
                       {node.title}
@@ -220,7 +219,7 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
                 </div>
 
                 <div className="shrink-0 text-right">
-                  <div className="text-xs text-white/30 font-mono">{node.duration}</div>
+                  <div className="text-xs text-muted font-mono">{node.duration}</div>
                   <div className="text-xs font-semibold" style={{ color: `${accent}90` }}>
                     +{node.xp} XP
                   </div>
@@ -231,7 +230,7 @@ function PathCard({ path, index }: { path: LearningPath; index: number }) {
 
           {/* CTA */}
           <button
-            className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+            className="mt-6 w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-text transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
             style={{
               background: `linear-gradient(135deg, ${accent}30, ${accent}15)`,
               border: `1px solid ${path.borderColor}`,
@@ -306,9 +305,9 @@ function GlobalRoadmapTimeline() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <div ref={ref} className="mb-24 relative">
+    <div ref={ref} className="mb-16 sm:mb-24 relative">
       {/* Horizontal Line on Desktop */}
-      <div className="absolute top-[28px] left-[32px] right-[32px] h-[3px] bg-white/[0.06] hidden lg:block overflow-hidden">
+      <div className="absolute top-[28px] left-[32px] right-[32px] h-[3px] bg-border-subtle hidden lg:block overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={inView ? { width: "100%" } : {}}
@@ -317,7 +316,7 @@ function GlobalRoadmapTimeline() {
         />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 relative">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 relative">
         {ROADMAP_STEPS.map((step, idx) => (
           <motion.div
             key={step.phase}
@@ -328,7 +327,7 @@ function GlobalRoadmapTimeline() {
           >
             {/* Step node indicator */}
             <div
-              className="z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.08] bg-[#080c1c] transition-all duration-300 group-hover:scale-110 group-hover:border-white/25 shadow-lg relative overflow-hidden"
+              className="z-10 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border border-border-subtle bg-surface transition-all duration-300 group-hover:scale-110 group-hover:border-border-medium shadow-lg relative overflow-hidden"
               style={{
                 boxShadow: `0 0 20px ${step.glow}20`,
               }}
@@ -341,26 +340,26 @@ function GlobalRoadmapTimeline() {
             </div>
 
             {/* Content card */}
-            <div className="mt-5 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5 backdrop-blur-xl transition-all duration-300 group-hover:border-white/10 group-hover:bg-white/[0.04] w-full relative">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/40">
+            <div className="mt-4 sm:mt-5 rounded-2xl border border-border-subtle bg-surface/40 p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 group-hover:border-border-medium group-hover:bg-surface/60 w-full relative">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted">
                 Phase 0{idx + 1}
               </span>
-              <h4 className="mt-1 text-base font-bold text-white group-hover:text-[#FF6B4A] transition-colors">
+              <h4 className="mt-1 text-sm sm:text-base font-bold text-text group-hover:text-[#FF6B4A] transition-colors">
                 {step.phase}
               </h4>
-              <p className="mt-1 text-xs text-white/55 leading-relaxed font-semibold">
+              <p className="mt-1 text-xs text-muted leading-relaxed font-semibold">
                 {step.title}
               </p>
-              <p className="mt-2 text-[11px] text-white/40 leading-relaxed">
+              <p className="mt-2 text-[11px] text-muted/80 leading-relaxed hidden sm:block">
                 {step.description}
               </p>
 
               {/* Skills Tags */}
-              <div className="mt-3 flex flex-wrap justify-center lg:justify-start gap-1">
+              <div className="mt-2 sm:mt-3 flex flex-wrap justify-center lg:justify-start gap-1">
                 {step.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-lg bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-mono text-white/50 border border-white/[0.05]"
+                    className="rounded-lg bg-surface px-1.5 py-0.5 text-[9px] font-mono text-muted border border-border-subtle"
                   >
                     {skill}
                   </span>
@@ -383,10 +382,18 @@ export default function LearningPathsSection() {
     <section id="learn" ref={sectionRef} className="section-pad relative overflow-hidden">
       {/* BG orbs */}
       <div className="pointer-events-none absolute -left-40 top-1/3 h-[500px] w-[500px] opacity-10 rounded-full"
-        style={{ background: "radial-gradient(circle, rgba(34,197,94,0.4) 0%, transparent 70%)", filter: "blur(60px)" }}
+        style={{
+          background: "radial-gradient(circle, rgba(34,197,94,0.4) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          willChange: "transform",
+        }}
       />
       <div className="pointer-events-none absolute -right-40 bottom-1/3 h-[500px] w-[500px] opacity-10 rounded-full"
-        style={{ background: "radial-gradient(circle, rgba(245,158,11,0.4) 0%, transparent 70%)", filter: "blur(60px)" }}
+        style={{
+          background: "radial-gradient(circle, rgba(245,158,11,0.4) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          willChange: "transform",
+        }}
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -398,11 +405,11 @@ export default function LearningPathsSection() {
           className="mb-16 text-center"
         >
           <SectionLabel>Learning Paths</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Your roadmap to{" "}
             <span className="gradient-text-primary">engineering mastery</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50 max-w-2xl mx-auto">
+          <p className="mt-4 text-subtitle text-muted max-w-2xl mx-auto">
             No more wondering what to learn next. Follow battle-tested paths built by
             engineers who&apos;ve hired and been hired at top companies.
           </p>

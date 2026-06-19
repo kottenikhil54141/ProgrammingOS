@@ -120,7 +120,7 @@ function TestimonialCard({
         delay: (index % 3) * 0.1 + row * 0.15,
         ease: [0.22, 1, 0.36, 1] as const,
       }}
-      className="group relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#080c1c] p-6 transition-all duration-500 hover:border-white/15 hover:-translate-y-1"
+      className="group relative overflow-hidden rounded-3xl border border-border-subtle bg-surface p-5 sm:p-6 transition-all duration-500 hover:border-border-medium hover:-translate-y-1"
       style={{
         boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
       }}
@@ -132,20 +132,20 @@ function TestimonialCard({
       />
 
       {/* Top: avatar + meta */}
-      <div className="flex items-start gap-4 mb-4">
+      <div className="flex items-start gap-3 sm:gap-4 mb-4">
         <div
-          className={`h-11 w-11 shrink-0 rounded-2xl bg-gradient-to-br ${AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length]} flex items-center justify-center text-xs font-bold text-white`}
+          className={`h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-2xl bg-gradient-to-br ${AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length]} flex items-center justify-center text-xs font-bold text-white`}
         >
           {testimonial.avatar}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-white">{testimonial.name}</div>
-          <div className="text-xs text-white/45 truncate">
+          <div className="text-sm font-semibold text-text">{testimonial.name}</div>
+          <div className="text-xs text-muted truncate">
             {testimonial.role} · {testimonial.company}
           </div>
         </div>
         <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+          className="shrink-0 rounded-full px-2 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wide leading-none"
           style={{
             background: `${testimonial.accentColor}18`,
             color: testimonial.accentColor,
@@ -164,7 +164,7 @@ function TestimonialCard({
       </div>
 
       {/* Text */}
-      <p className="text-sm text-white/60 leading-relaxed">
+      <p className="text-sm text-muted leading-relaxed">
         {testimonial.text.split(testimonial.highlight).map((part, i) =>
           i === 0 ? (
             <span key={i}>{part}</span>
@@ -216,24 +216,24 @@ export default function TestimonialsSection() {
           className="mb-16 text-center"
         >
           <SectionLabel>Testimonials</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Real engineers.{" "}
             <span className="gradient-text-secondary">Real results.</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50 max-w-xl mx-auto">
+          <p className="mt-4 text-subtitle text-muted max-w-xl mx-auto">
             Not cherry-picked reviews. These are engineers who grinded the platform
             and landed real jobs.
           </p>
         </motion.div>
 
-        {/* Grid rows */}
-        <div className="space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Grid rows - single col mobile, 2 cols sm, 3 cols lg */}
+        <div className="space-y-4 sm:space-y-5">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {row1.map((t, i) => (
               <TestimonialCard key={t.name} testimonial={t} index={i} row={0} />
             ))}
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {row2.map((t, i) => (
               <TestimonialCard key={t.name} testimonial={t} index={i} row={1} />
             ))}
@@ -252,9 +252,9 @@ export default function TestimonialsSection() {
               <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
             ))}
           </div>
-          <p className="text-sm text-white/50">
-            <span className="font-bold text-white">4.9/5</span> from{" "}
-            <span className="font-semibold text-white/80">25,000+</span> verified learners
+          <p className="text-sm text-muted">
+            <span className="font-bold text-text">4.9/5</span> from{" "}
+            <span className="font-semibold text-text/80">25,000+</span> verified learners
           </p>
         </motion.div>
       </div>

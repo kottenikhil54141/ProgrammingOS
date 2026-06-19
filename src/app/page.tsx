@@ -9,6 +9,7 @@ import ProjectsSection from "@/components/projects/ProjectsSection";
 import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
 import FAQSection from "@/components/faq/FAQSection";
 import Footer from "@/components/footer/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export const metadata = {
   title: "NIK's AI — Become an Engineer, Not Just a Learner",
@@ -18,7 +19,7 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white overflow-x-hidden relative">
+    <main className="min-h-screen bg-bg text-text transition-colors duration-300 overflow-x-hidden relative">
       {/* Floating interactive background */}
       <FloatingBackground />
 
@@ -32,6 +33,7 @@ export default function Home() {
       <TestimonialsSection />
       <FAQSection />
       <Footer />
+      <ScrollToTop />
     </main>
   );
 }

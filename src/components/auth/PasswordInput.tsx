@@ -44,18 +44,18 @@ export default function PasswordInput({
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between items-center">
-        <label htmlFor={id} className="block text-sm font-medium text-white/70">
+        <label htmlFor={id} className="block text-sm font-medium text-text/80">
           {label}
         </label>
         {showStrengthMeter && value && (
-          <span className="text-xs font-semibold text-white/40">
+          <span className="text-xs font-semibold text-muted">
             Strength:{" "}
             <span
               className={cn("text-xs font-bold", {
-                "text-red-400": strength <= 1,
-                "text-orange-400": strength === 2,
-                "text-yellow-400": strength === 3,
-                "text-emerald-400": strength === 4,
+                "text-red-500 dark:text-red-400": strength <= 1,
+                "text-orange-500 dark:text-orange-400": strength === 2,
+                "text-yellow-600 dark:text-yellow-400": strength === 3,
+                "text-emerald-500 dark:text-emerald-400": strength === 4,
               })}
             >
               {strengthLabel}
@@ -65,7 +65,7 @@ export default function PasswordInput({
       </div>
 
       <div className="relative">
-        <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
+        <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted/60">
           <Lock className="h-4 w-4" />
         </div>
         <input
@@ -75,17 +75,17 @@ export default function PasswordInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={cn(
-            "w-full rounded-2xl border bg-white/[0.04] pl-11 pr-12 py-3.5 text-sm text-white placeholder-white/25 outline-none transition-all duration-200",
-            "focus:bg-white/[0.07] focus:ring-2",
+            "w-full rounded-2xl border bg-white/[0.03] dark:bg-white/[0.04] pl-11 pr-12 py-3.5 text-sm text-text placeholder-muted/50 outline-none transition-all duration-200",
+            "focus:bg-[#0F172A]/[0.04] dark:focus:bg-white/[0.07] focus:ring-2",
             error
               ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-              : "border-white/[0.08] focus:border-[#7C5CFF]/60 focus:ring-[#7C5CFF]/20"
+              : "border-border-subtle focus:border-[#7C5CFF]/60 focus:ring-[#7C5CFF]/20"
           )}
         />
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted/60 hover:text-text transition-colors"
           aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -93,12 +93,12 @@ export default function PasswordInput({
       </div>
 
       {showStrengthMeter && value && (
-        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex gap-1 mt-1.5">
+        <div className="h-1.5 w-full bg-[#0F172A]/[0.05] dark:bg-white/5 rounded-full overflow-hidden flex gap-1 mt-1.5">
           {[1, 2, 3, 4].map((step) => (
             <div
               key={step}
               className={cn("h-full flex-1 rounded-full transition-all duration-300", 
-                step <= strength ? strengthColor : "bg-white/5"
+                step <= strength ? strengthColor : "bg-[#0F172A]/[0.05] dark:bg-white/5"
               )}
             />
           ))}
@@ -106,7 +106,7 @@ export default function PasswordInput({
       )}
 
       {error && (
-        <p className="text-xs text-red-400 flex items-center gap-1.5 mt-1">
+        <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1.5 mt-1">
           <AlertCircle className="h-3 w-3 shrink-0" />
           {error}
         </p>

@@ -44,6 +44,10 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 interface AuthContextValue extends AuthState {
   accessToken: string | null;
   login: (credentials: LoginCredentials) => Promise<{ error: AuthError | null }>;
+  loginWithProvider: (
+    provider: "google" | "sso",
+    oauthDetails?: { email: string; name: string; username: string }
+  ) => Promise<{ error: AuthError | null }>;
   signup: (data: SignupData) => Promise<{ error: AuthError | null; verificationToken?: string }>;
   logout: () => Promise<void>;
   updateUser: (patch: Partial<User>) => void;
@@ -87,10 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/auth/refresh", { method: "POST" });
       if (res.ok) {
         const data = await res.json();
-        setAccessToken(data.accessToken);
-        dispatch({ type: "SET_USER", user: data.user });
-        persistUser(data.user);
-        return true;
+        if (data.accessToken && data.user) {
+          setAccessToken(data.accessToken);
+          dispatch({ type: "SET_USER", user: data.user });
+          persistUser(data.user);
+          return true;
+        }
       }
     } catch (err) {
       console.error("Session refresh network error:", err);
@@ -105,16 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Rehydrate on mount
   useEffect(() => {
     async function initAuth() {
-      // First try refreshing via cookie
+      // 1. Check local storage optimistically to render UI instantly
+      const local = loadPersistedUser();
+      if (local) {
+        dispatch({ type: "SET_USER", user: local });
+      }
+      
+      // 2. Silently verify session via cookie refresh in background
       const success = await refreshSession();
-      if (!success) {
-        // If cookie refresh fails, fall back to check localStorage user just in case, but keep loader clear
-        const local = loadPersistedUser();
-        if (local) {
-          dispatch({ type: "SET_USER", user: local });
-        } else {
-          dispatch({ type: "SET_LOADING", value: false });
-        }
+      if (!success && !local) {
+        dispatch({ type: "SET_LOADING", value: false });
       }
     }
     initAuth();
@@ -175,6 +181,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  // Social Login handler
+  const loginWithProvider = useCallback(
+    async (
+      provider: "google" | "sso",
+      oauthDetails?: { email: string; name: string; username: string }
+    ): Promise<{ error: AuthError | null }> => {
+      dispatch({ type: "SET_LOADING", value: true });
+      try {
+        const res = await fetch("/api/auth/social", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider, ...oauthDetails }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          dispatch({ type: "SET_LOADING", value: false });
+          return { error: data.error || "unknown" };
+        }
+
+        setAccessToken(data.accessToken);
+        dispatch({ type: "SET_USER", user: data.user });
+        persistUser(data.user);
+        return { error: null };
+      } catch {
+        dispatch({ type: "SET_LOADING", value: false });
+        return { error: "network_error" };
+      }
+    },
+    []
+  );
+
   // Logout handler
   const logout = useCallback(async () => {
     try {
@@ -200,12 +238,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ...state,
       accessToken,
       login,
+      loginWithProvider,
       signup,
       logout,
       updateUser,
       refreshSession,
     }),
-    [state, accessToken, login, signup, logout, updateUser, refreshSession]
+    [state, accessToken, login, loginWithProvider, signup, logout, updateUser, refreshSession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

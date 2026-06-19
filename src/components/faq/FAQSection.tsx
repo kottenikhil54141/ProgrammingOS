@@ -74,7 +74,7 @@ function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
         "overflow-hidden rounded-2xl border transition-all duration-300",
         open
           ? "border-[#7C5CFF]/30 bg-[#7C5CFF]/[0.04]"
-          : "border-white/[0.07] bg-[#080c1c] hover:border-white/[0.12]"
+          : "border-border-subtle bg-surface hover:border-border-medium"
       )}
     >
       <button
@@ -100,7 +100,7 @@ function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
           </AnimatePresence>
         </div>
 
-        <span className={cn("text-sm font-semibold leading-relaxed transition-colors duration-200", open ? "text-white" : "text-white/80")}>
+        <span className={cn("text-sm font-semibold leading-relaxed transition-colors duration-200", open ? "text-text" : "text-text/80")}>
           {faq.q}
         </span>
       </button>
@@ -113,8 +113,8 @@ function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }}
           >
-            <div className="px-5 pb-5 pl-[52px]">
-              <p className="text-sm text-white/55 leading-relaxed">{faq.a}</p>
+            <div className="px-4 sm:px-5 pb-4 sm:pb-5 pl-[52px]">
+              <p className="text-sm text-muted leading-relaxed">{faq.a}</p>
             </div>
           </motion.div>
         )}
@@ -145,11 +145,11 @@ export default function FAQSection() {
           className="mb-12 text-center"
         >
           <SectionLabel>FAQ</SectionLabel>
-          <h2 className="text-display mt-4 text-white">
+          <h2 className="text-display mt-4 text-text">
             Questions we get{" "}
             <span className="gradient-text-primary">all the time</span>
           </h2>
-          <p className="mt-4 text-subtitle text-white/50">
+          <p className="mt-4 text-subtitle text-muted">
             If something isn&apos;t answered here, ping us on Discord — we respond
             within 2 hours.
           </p>
@@ -180,7 +180,7 @@ export default function FAQSection() {
 
         {/* FAQ Items */}
         <div className="space-y-3">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {filtered.map((faq, i) => (
               <FAQItem key={faq.q} faq={faq} index={i} />
             ))}
@@ -192,13 +192,13 @@ export default function FAQSection() {
           initial={{ opacity: 0, y: 16 }}
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.8 }}
-          className="mt-14 text-center rounded-3xl border border-white/[0.07] bg-white/[0.02] p-8"
+          className="mt-12 sm:mt-14 text-center rounded-3xl border border-border-subtle bg-surface/50 p-6 sm:p-8"
         >
-          <p className="text-sm text-white/40 mb-1">Still have questions?</p>
-          <p className="text-base font-semibold text-white mb-4">
+          <p className="text-sm text-muted mb-1">Still have questions?</p>
+          <p className="text-base font-semibold text-text mb-4">
             Join our Discord — 12,000+ learners and mentors active daily.
           </p>
-          <button className="inline-flex items-center gap-2 rounded-2xl bg-[#5865F2] px-6 py-3 text-sm font-bold text-white transition-all hover:bg-[#4752C4] hover:scale-105 active:scale-100">
+          <button className="inline-flex items-center gap-2 rounded-2xl bg-[#5865F2] px-5 sm:px-6 py-3 text-sm font-bold text-white transition-all hover:bg-[#4752C4] hover:scale-105 active:scale-100">
             <span className="text-base">💬</span>
             Join Discord Community
           </button>
