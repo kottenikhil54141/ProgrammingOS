@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DBService, hashPassword } from "@/services/db";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +10,15 @@ export async function POST(request: Request) {
     if (!name || !email || !password || !username) {
       return NextResponse.json(
         { error: "missing_fields" },
+        { status: 400 }
+      );
+    }
+
+    // Server-side email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "invalid_email" },
         { status: 400 }
       );
     }
@@ -40,7 +50,8 @@ export async function POST(request: Request) {
     }
 
     const { hash, salt } = hashPassword(password);
-    const verificationToken = `vtok_${Math.random().toString(36).substring(2, 15)}`;
+    // Cryptographically secure random token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     const newUser = DBService.createUser({
       name,
@@ -49,6 +60,7 @@ export async function POST(request: Request) {
       passwordHash: hash,
       salt,
       role: "user",
+      authProvider: "password",
       theme: "light",
       isVerified: false,
       verificationToken,
@@ -64,8 +76,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       user: safeUser,
       message: "Signup successful. Verification email simulated.",
-      // Return the token so client-side sandbox can verify it easily without actual email transport
-      verificationToken,
+      // Only expose the token in non-production environments for sandbox testing
+      ...(process.env.NODE_ENV !== "production" && { verificationToken }),
     });
   } catch (error) {
     console.error("Signup API Error:", error);

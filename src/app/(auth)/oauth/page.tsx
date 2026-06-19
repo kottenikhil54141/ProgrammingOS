@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/lib/auth-context";
 import { ROUTES } from "@/constants/routes";
-import { ArrowLeft, User, Mail, Shield, Check, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, User, Mail, Shield, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
 
@@ -89,6 +89,12 @@ function OAuthPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<OAuthAccount | null>(null);
+
+  // Reset selected account on provider changes
+  useEffect(() => {
+    setSelectedAccount(null);
+  }, [provider]);
 
   // Custom account fields
   const [customName, setCustomName] = useState("");
@@ -208,40 +214,82 @@ function OAuthPageContent() {
                 </span>
 
                 <div className="space-y-2">
-                  {accounts.map((account) => (
-                    <button
-                      key={account.email}
-                      type="button"
-                      onClick={() => handleSelectAccount(account)}
-                      className="w-full flex items-center gap-3.5 p-3 rounded-2xl border border-border-subtle bg-white/[0.02] dark:bg-white/[0.02] hover:bg-[#0F172A]/[0.03] dark:hover:bg-white/[0.05] hover:border-border-medium transition-all duration-200 text-left group"
-                    >
-                      <div
+                  {accounts.map((account) => {
+                    const isSelected = selectedAccount?.email === account.email;
+                    return (
+                      <button
+                        key={account.email}
+                        type="button"
+                        onClick={() => setSelectedAccount(account)}
                         className={cn(
-                          "h-10 w-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0",
-                          account.bgGradient
+                          "w-full flex items-center gap-3.5 p-3 rounded-2xl border transition-all duration-200 text-left group",
+                          isSelected
+                            ? "border-[#7C5CFF] bg-[#7C5CFF]/10 shadow-[0_0_15px_rgba(124,92,255,0.05)]"
+                            : "border-border-subtle bg-slate-50 dark:bg-white/[0.02] hover:bg-[#0F172A]/[0.03] dark:hover:bg-white/[0.05] hover:border-border-medium"
                         )}
                       >
-                        {account.initials}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-text group-hover:text-text/95 truncate">
-                          {account.name}
+                        <div
+                          className={cn(
+                            "h-10 w-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0",
+                            account.bgGradient
+                          )}
+                        >
+                          {account.initials}
                         </div>
-                        <div className="text-xs text-muted truncate">
-                          {account.email}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-text truncate">
+                            {account.name}
+                          </div>
+                          <div className="text-xs text-muted truncate">
+                            {account.email}
+                          </div>
                         </div>
-                      </div>
-                      <div className="h-5 w-5 rounded-full border border-border-subtle group-hover:border-border-medium group-hover:bg-[#FF6B4A]/5 flex items-center justify-center transition-colors">
-                        <Check className="h-3 w-3 text-[#FF6B4A] opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </button>
-                  ))}
+                        <div
+                          className={cn(
+                            "h-5 w-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                            isSelected
+                              ? "border-[#7C5CFF] bg-[#7C5CFF]"
+                              : "border-border-subtle group-hover:border-border-medium group-hover:bg-[#FF6B4A]/5"
+                          )}
+                        >
+                          <Check
+                            className={cn(
+                              "h-3 w-3 transition-opacity",
+                              isSelected
+                                ? "text-white opacity-100"
+                                : "text-[#FF6B4A] opacity-0 group-hover:opacity-100"
+                            )}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
+
+                <AnimatePresence>
+                  {selectedAccount && (
+                    <motion.button
+                      key="continue-btn"
+                      type="button"
+                      initial={{ opacity: 0, y: -5, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: "auto" }}
+                      exit={{ opacity: 0, y: -5, height: 0 }}
+                      onClick={() => handleSelectAccount(selectedAccount)}
+                      className="w-full py-3.5 rounded-2xl text-xs font-semibold text-white bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] hover:opacity-95 shadow-md shadow-[#7C5CFF]/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2"
+                    >
+                      Continue as {selectedAccount.name}
+                      <ArrowRight className="h-4 w-4" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
 
                 <button
                   type="button"
-                  onClick={() => setShowCustomForm(true)}
-                  className="w-full py-3.5 text-center text-xs font-semibold text-text/80 hover:text-text border border-dashed border-border-subtle rounded-2xl hover:border-border-medium hover:bg-[#0F172A]/[0.01] dark:hover:bg-white/[0.01] transition-colors"
+                  onClick={() => {
+                    setSelectedAccount(null);
+                    setShowCustomForm(true);
+                  }}
+                  className="w-full py-3.5 text-center text-xs font-semibold text-text/80 hover:text-[#7C5CFF] border border-dashed border-border-subtle rounded-2xl hover:border-[#7C5CFF]/30 hover:bg-[#7C5CFF]/5 transition-all duration-200"
                 >
                   + Use another custom profile
                 </button>
@@ -284,7 +332,7 @@ function OAuthPageContent() {
                         value={customName}
                         onChange={(e) => setCustomName(e.target.value)}
                         placeholder="John Doe"
-                        className="w-full rounded-xl border border-border-subtle bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
+                        className="w-full rounded-xl border border-border-subtle bg-slate-50 dark:bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
                       />
                     </div>
                   </div>
@@ -304,7 +352,7 @@ function OAuthPageContent() {
                         value={customEmail}
                         onChange={(e) => setCustomEmail(e.target.value)}
                         placeholder="john.doe@example.com"
-                        className="w-full rounded-xl border border-border-subtle bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
+                        className="w-full rounded-xl border border-border-subtle bg-slate-50 dark:bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
                       />
                     </div>
                   </div>
@@ -323,7 +371,7 @@ function OAuthPageContent() {
                         value={customUsername}
                         onChange={(e) => setCustomUsername(e.target.value)}
                         placeholder="johndoe"
-                        className="w-full rounded-xl border border-border-subtle bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
+                        className="w-full rounded-xl border border-border-subtle bg-slate-50 dark:bg-white/[0.03] pl-10 pr-4 py-2.5 text-xs text-text placeholder-muted/50 outline-none transition-all focus:border-[#7C5CFF]/60 focus:ring-2 focus:ring-[#7C5CFF]/15"
                       />
                     </div>
                   </div>

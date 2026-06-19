@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { ROUTES } from "@/constants/routes";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BookOpen, Terminal, Code2, Cpu, Sparkles, Clock, Trophy, Play, CheckCircle } from "lucide-react";
+import { X, BookOpen, Terminal, Code2, Cpu, Sparkles, Clock, Trophy, Play, CheckCircle, FolderGit2, Globe, ArrowLeft } from "lucide-react";
 import Sidebar, { TabId } from "./components/sidebar/Sidebar";
 import Topbar from "./components/topbar/Topbar";
 import NotificationsMenu, { SystemNotification } from "./components/notifications/NotificationsMenu";
@@ -27,12 +27,17 @@ import SkillAnalytics from "./components/analytics/SkillAnalytics";
 import ContinueLearning from "./components/widgets/ContinueLearning";
 import NotesBookmarks from "./components/widgets/NotesBookmarks";
 import GoalsWidget from "./components/widgets/GoalsWidget";
+import RecentProjects from "./components/widgets/RecentProjects";
+import MentorChat from "./components/widgets/MentorChat";
+import MentorWidget from "./components/widgets/MentorWidget";
+import ResumeBuilderWidget from "./components/widgets/ResumeBuilderWidget";
+import PortfolioWidget from "./components/widgets/PortfolioWidget";
 
 import InterviewTracker from "./components/widgets/InterviewTracker";
 import SettingsWidget from "./components/settings/SettingsWidget";
 
 export default function DashboardClient() {
-  const { isAuthenticated, isLoading, user, updateUser } = useAuth();
+  const { isAuthenticated, isLoading, user, updateUser, logout } = useAuth();
   const router = useRouter();
 
   // Tab & UI Layout states
@@ -132,6 +137,43 @@ export default function DashboardClient() {
       router.replace(ROUTES.LOGIN);
     }
   }, [isAuthenticated, isLoading, router]);
+
+  // ── Back-button auto-logout ─────────────────────────────────────────
+  // Push a sentinel history entry on mount so the dashboard always has
+  // an extra entry above it. When the user presses the browser Back button,
+  // the popstate event fires here instead of navigating away — we then
+  // log out and redirect to login.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Push a sentinel so back-press always triggers popstate
+    window.history.pushState({ dashboardSentinel: true }, "");
+
+    const handlePopState = () => {
+      // User hit the browser Back button while on the dashboard
+      logout().then(() => {
+        router.replace(ROUTES.LOGIN);
+      });
+    };
+
+    // BFCache: some browsers restore pages from cache without firing popstate.
+    // Force a logout on any persisted page-show restoration too.
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        logout().then(() => {
+          router.replace(ROUTES.LOGIN);
+        });
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, [logout, router]);
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -255,6 +297,16 @@ export default function DashboardClient() {
               transition={{ duration: 0.2 }}
               className="max-w-6xl mx-auto space-y-4 sm:space-y-6 pb-12"
             >
+              {activeTab !== "home" && (
+                <button
+                  onClick={() => setActiveTab("home")}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface/40 hover:bg-surface/60 border border-border-subtle hover:border-[#7C5CFF]/30 text-xs font-semibold text-text transition-all duration-200 outline-none cursor-pointer group"
+                >
+                  <ArrowLeft className="h-4 w-4 text-muted group-hover:text-[#7C5CFF] group-hover:-translate-x-0.5 transition-all" />
+                  <span>Back to Dashboard</span>
+                </button>
+              )}
+
               {/* Home widget grid */}
               {activeTab === "home" && (
                 <div className="space-y-6">
@@ -445,6 +497,45 @@ export default function DashboardClient() {
               {/* Practice View */}
               {activeTab === "practice" && <InterviewTracker />}
 
+              {/* Projects View */}
+              {activeTab === "projects" && (
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-2">
+                      <FolderGit2 className="h-6 w-6 text-[#7C5CFF]" />
+                      <span>Project Workspace Explorer</span>
+                    </h1>
+                    <p className="text-xs text-muted mt-1 leading-relaxed">
+                      Review, configure, and initialize sandbox projects for your developer portfolio.
+                    </p>
+                  </div>
+                  <RecentProjects setActiveTab={setActiveTab} />
+                </div>
+              )}
+
+              {/* AI Mentor View */}
+              {activeTab === "mentor" && (
+                <div className="space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-2">
+                      <Sparkles className="h-6 w-6 text-[#7C5CFF]" />
+                      <span>Interactive AI Coding Mentor</span>
+                    </h1>
+                    <p className="text-xs text-muted mt-1 leading-relaxed">
+                      Ask questions, optimize algorithms, or get live feedback on your curriculum sandbox challenges.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2">
+                      <MentorChat />
+                    </div>
+                    <div>
+                      <MentorWidget setActiveTab={setActiveTab} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Playground View (premium custom IDE simulator) */}
               {activeTab === "playground" && (
                 <div className="space-y-6">
@@ -462,6 +553,12 @@ export default function DashboardClient() {
                   />
                 </div>
               )}
+
+              {/* Resume Builder View */}
+              {activeTab === "resume" && <ResumeBuilderWidget />}
+
+              {/* Portfolio View */}
+              {activeTab === "portfolio" && <PortfolioWidget />}
 
               {/* Settings View */}
               {activeTab === "settings" && <SettingsWidget />}

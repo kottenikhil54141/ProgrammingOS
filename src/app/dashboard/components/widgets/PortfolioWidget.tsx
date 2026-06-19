@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Globe, ArrowUpRight, Award, ShieldCheck, Copy, Check } from "lucide-react";
+
+import { useAuth } from "@/lib/auth-context";
 
 export default function PortfolioWidget() {
   const [copied, setCopied] = useState(false);
-  const publicLink = "https://niksai.dev/@alexchen";
+  const [publicLink, setPublicLink] = useState("http://localhost:3000");
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const origin = window.location.origin;
+      setPublicLink(`${origin}/${user?.username || ""}`);
+    }
+  }, [user]);
 
   const certificates = [
     { title: "Python Core Automation Master", issuer: "NIK's AI", date: "June 2026", hash: "CERT-PY-8823" },
@@ -41,27 +51,39 @@ export default function PortfolioWidget() {
               Your public link showcases your unlocked badges, streak records, finished projects, and verified certificates. Share this link on LinkedIn or Resume submissions.
             </p>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <div className="flex-1 rounded-xl border border-border-subtle bg-border-subtle/20 px-3.5 py-2.5 text-xs text-muted font-mono flex items-center overflow-x-auto select-all">
                 {publicLink}
               </div>
 
-              <button
-                onClick={copyLink}
-                className="flex items-center gap-1.5 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/20 hover:bg-[#7C5CFF]/25 px-4 text-xs font-semibold text-[#A78BFF] transition-all outline-none cursor-pointer"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-4.5 w-4.5 text-emerald-400" />
-                    <span>Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={copyLink}
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/20 hover:bg-[#7C5CFF]/25 px-4 py-2.5 text-xs font-semibold text-[#A78BFF] transition-all outline-none cursor-pointer"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-emerald-400" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+
+                <a
+                  href={`/${user?.username || ""}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-surface/30 border border-border-subtle hover:bg-surface/50 px-4 py-2.5 text-xs font-semibold text-text transition-all outline-none cursor-pointer"
+                >
+                  <ArrowUpRight className="h-4 w-4 text-[#7C5CFF]" />
+                  <span>View Live</span>
+                </a>
+              </div>
             </div>
           </div>
 

@@ -16,11 +16,11 @@ export default function AuthCard({ children, title, subtitle }: AuthCardProps) {
       className="w-full max-w-md"
     >
       <div
-        className="relative overflow-hidden rounded-3xl p-8 sm:p-10 border border-border-subtle bg-surface/85 backdrop-blur-2xl shadow-elevated"
+        className="relative overflow-hidden rounded-3xl p-8 sm:p-10 glass-surface"
       >
         {/* Top glow */}
         <div
-          className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-32 w-48 rounded-full opacity-30"
+          className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-32 w-48 rounded-full opacity-35"
           style={{
             background: "radial-gradient(circle, rgba(124, 92, 255, 0.8) 0%, transparent 70%)",
             filter: "blur(24px)",
@@ -29,10 +29,10 @@ export default function AuthCard({ children, title, subtitle }: AuthCardProps) {
 
         {/* Header */}
         <div className="mb-8 text-center relative z-10">
-          <h1 className="text-2xl font-black text-text tracking-tight">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             {title}
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
+          <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
             {subtitle}
           </p>
         </div>

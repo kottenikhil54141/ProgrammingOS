@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart, TrendingUp } from "lucide-react";
+import { BarChart, TrendingUp, Activity } from "lucide-react";
 import { PythonProgress } from "@/services/pythonProgress";
 import { JavaScriptProgress } from "@/services/javascriptProgress";
 import { PYTHON_CURRICULUM } from "@/services/pythonCurriculum";
 import { JAVASCRIPT_CURRICULUM } from "@/services/javascriptCurriculum";
+import { useAuth } from "@/lib/auth-context";
 
 interface SkillAnalyticsProps {
   pythonProgress: PythonProgress | null;
@@ -14,6 +15,64 @@ interface SkillAnalyticsProps {
 
 export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnalyticsProps) {
   const [activeTab, setActiveTab] = useState<"weekly" | "monthly">("weekly");
+  const { user } = useAuth();
+  const [isMonitoring, setIsMonitoring] = useState(false);
+  const [keystrokes, setKeystrokes] = useState(0);
+  const [memoryLoad, setMemoryLoad] = useState(4.85);
+  const [wavePhase, setWavePhase] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let inactivityTimeout: NodeJS.Timeout;
+
+    const triggerActivity = () => {
+      setIsMonitoring(true);
+      clearTimeout(inactivityTimeout);
+      inactivityTimeout = setTimeout(() => {
+        setIsMonitoring(false);
+      }, 12000);
+    };
+
+    const handleKeydown = () => {
+      setKeystrokes((k) => k + 1);
+      triggerActivity();
+    };
+
+    const handleMousemove = () => {
+      triggerActivity();
+    };
+
+    const handleCodeExecuted = () => {
+      triggerActivity();
+      setMemoryLoad((m) => {
+        const next = m + (Math.random() - 0.5) * 0.5;
+        return Math.max(3.5, Math.min(8.0, next));
+      });
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    window.addEventListener("mousemove", handleMousemove);
+    window.addEventListener("code-executed", handleCodeExecuted);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+      window.removeEventListener("mousemove", handleMousemove);
+      window.removeEventListener("code-executed", handleCodeExecuted);
+      clearTimeout(inactivityTimeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMonitoring) return;
+    let animId: number;
+    const tick = () => {
+      setWavePhase((p) => (p + 0.12) % (Math.PI * 2));
+      animId = requestAnimationFrame(tick);
+    };
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [isMonitoring]);
 
   // Dynamic Skill matrix calculations
   const totalPython = PYTHON_CURRICULUM.length;
@@ -54,14 +113,44 @@ export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnal
   const totalAuto = totalPythonAuto + totalJsAuto || 1;
   const completedAuto = completedPythonAuto + completedJsAuto;
 
-  // Radar categories
+  // Radar categories with baseline vs real progress data
   const categories = [
-    { name: "Python", val: totalPython > 0 ? Math.round((completedPython / totalPython) * 100) : 0, angle: 0 },
-    { name: "JS Scripting", val: totalJS > 0 ? Math.round((completedJS / totalJS) * 100) : 0, angle: 60 },
-    { name: "OOP Design", val: Math.round((completedOop / totalOop) * 100), angle: 120 },
-    { name: "Algorithms", val: Math.round((completedAlgo / totalAlgo) * 100), angle: 180 },
-    { name: "System Design", val: Math.round((completedSys / totalSys) * 100), angle: 240 },
-    { name: "Automation", val: Math.round((completedAuto / totalAuto) * 100), angle: 300 },
+    {
+      name: "Python",
+      realVal: totalPython > 0 ? Math.round((completedPython / totalPython) * 100) : 0,
+      baselineVal: 30,
+      angle: 0
+    },
+    {
+      name: "JS Scripting",
+      realVal: totalJS > 0 ? Math.round((completedJS / totalJS) * 100) : 0,
+      baselineVal: 30,
+      angle: 60
+    },
+    {
+      name: "OOP Design",
+      realVal: Math.round((completedOop / totalOop) * 100),
+      baselineVal: 30,
+      angle: 120
+    },
+    {
+      name: "Algorithms",
+      realVal: Math.round((completedAlgo / totalAlgo) * 100),
+      baselineVal: 30,
+      angle: 180
+    },
+    {
+      name: "System Design",
+      realVal: Math.round((completedSys / totalSys) * 100),
+      baselineVal: 30,
+      angle: 240
+    },
+    {
+      name: "Automation",
+      realVal: Math.round((completedAuto / totalAuto) * 100),
+      baselineVal: 30,
+      angle: 300
+    },
   ];
 
   // Radar chart helper
@@ -85,9 +174,11 @@ export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnal
       .join(" ");
   });
 
-  // User's actual profile coordinates polygon points
-  // Avoid collapsing to single point by using a minimum val of 4 for plotting visibility if everything is 0
-  const points = categories.map((cat) => getCoords(cat.angle, Math.max(4, cat.val))).join(" ");
+  // User's actual profile coordinates polygon points (Baseline hex when idle, Live user progress when active/used)
+  const points = categories.map((cat) => {
+    const val = isMonitoring ? cat.realVal : cat.baselineVal;
+    return getCoords(cat.angle, Math.max(4, val));
+  }).join(" ");
 
   // Study hours tracker state
   const [weeklyHours, setWeeklyHours] = useState<{ label: string; hours: number }[]>([]);
@@ -162,9 +253,25 @@ export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnal
       {/* Radar Skills */}
       <div className="flex flex-col justify-between h-full">
         <div>
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="h-5 w-5 text-[#7C5CFF]" />
-            <h2 className="text-sm font-bold text-text tracking-tight">Skill Matrix</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              {isMonitoring ? (
+                <Activity className="h-5 w-5 text-emerald-500 animate-pulse" />
+              ) : (
+                <TrendingUp className="h-5 w-5 text-[#7C5CFF]" />
+              )}
+              <h2 className="text-sm font-bold text-text tracking-tight">
+                {isMonitoring ? "Active User Metrics" : "Skill Matrix"}
+              </h2>
+            </div>
+            
+            <span className={`text-[8px] font-mono font-bold px-2 py-0.5 rounded-full border transition-colors duration-300 ${
+              isMonitoring 
+                ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" 
+                : "text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-white/5 border-border-subtle"
+            }`}>
+              {isMonitoring ? "LIVE USER DATA" : "TARGET SCHEMA"}
+            </span>
           </div>
 
           <div className="flex justify-center items-center py-2 relative">
@@ -199,6 +306,13 @@ export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnal
                 className="fill-[#7C5CFF]/15 stroke-[#7C5CFF] stroke-[1.5] shadow-lg transition-all duration-500"
               />
 
+              {/* Center core indicator */}
+              <polygon
+                points="106,100 103,105.2 97,105.2 94,100 97,94.8 103,94.8"
+                className="fill-[#7C5CFF] stroke-white dark:stroke-[#0B1020] stroke-[1]"
+              />
+              <circle cx="100" cy="100" r="1.5" className="fill-white" />
+
               {/* Label texts */}
               {categories.map((cat, idx) => {
                 const posStr = getCoords(cat.angle, 120).split(",");
@@ -222,16 +336,57 @@ export default function SkillAnalytics({ pythonProgress, jsProgress }: SkillAnal
           </div>
         </div>
 
-        {/* Prediction summary */}
-        <div className="mt-4 rounded-xl bg-surface/40 border border-border-subtle p-3">
-          <span className="text-[9px] font-bold font-mono text-[#7C5CFF] uppercase tracking-wider block">
-            AI Learning Projection
-          </span>
-          <p className="text-[10px] text-muted mt-1 leading-relaxed">
-            {completedPython + completedJS === 0
-              ? "Start code execution to compute certificate progression forecasts."
-              : `At current velocity, you are projected to reach next level in ${(10 - Math.min(9, completedPython + completedJS)) * 3} days at standard pacing.`}
-          </p>
+        {/* Prediction / Live Status summary */}
+        <div className="mt-4 rounded-xl bg-surface/40 border border-border-subtle p-3 transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <span className={`text-[9px] font-bold font-mono uppercase tracking-wider block ${isMonitoring ? "text-emerald-500" : "text-[#7C5CFF]"}`}>
+              {isMonitoring ? "Active Monitor Trace" : "AI Learning Projection"}
+            </span>
+            {isMonitoring && (
+              <span className="text-[7px] font-mono text-emerald-500 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">
+                ACTIVE
+              </span>
+            )}
+          </div>
+          
+          {isMonitoring ? (
+            <div className="mt-1 space-y-2">
+              <p className="text-[10px] text-muted leading-relaxed">
+                Workspace action detected. Rendering live stats for <span className="font-bold text-text">{user?.name || "Developer"}</span>:
+              </p>
+              
+              <div className="grid grid-cols-2 gap-2 text-[9px] font-mono mt-1.5">
+                <div className="bg-slate-100/50 dark:bg-white/[0.02] border border-border-subtle/50 rounded-lg p-1.5 flex flex-col">
+                  <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Keystrokes</span>
+                  <span className="text-text font-black">{keystrokes} Typed</span>
+                </div>
+                <div className="bg-slate-100/50 dark:bg-white/[0.02] border border-border-subtle/50 rounded-lg p-1.5 flex flex-col">
+                  <span className="text-[7px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Sandbox RAM</span>
+                  <span className="text-text font-black">{memoryLoad.toFixed(2)} MB</span>
+                </div>
+              </div>
+
+              {/* Minimal oscilloscope wave */}
+              <div className="h-6 w-full relative flex items-center justify-center bg-slate-100/30 dark:bg-white/[0.01] rounded-lg border border-border-subtle/30 overflow-hidden">
+                <svg className="w-full h-full" viewBox="0 0 200 30" preserveAspectRatio="none">
+                  <path
+                    d={Array.from({ length: 40 }, (_, i) => {
+                      const x = (i / 39) * 200;
+                      const y = 15 + Math.sin(x * 0.12 + wavePhase) * 6;
+                      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+                    }).join(" ")}
+                    className="fill-none stroke-[#7C5CFF] stroke-[1] drop-shadow-[0_0_4px_rgba(124,92,255,0.4)]"
+                  />
+                </svg>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[10px] text-muted mt-1 leading-relaxed">
+              {completedPython + completedJS === 0
+                ? "Start code execution to compute certificate progression forecasts."
+                : `At current velocity, you are projected to reach next level in ${(10 - Math.min(9, completedPython + completedJS)) * 3} days at standard pacing.`}
+            </p>
+          )}
         </div>
       </div>
 

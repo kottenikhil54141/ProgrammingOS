@@ -72,6 +72,9 @@ export const PyodideRunner = {
     code: string,
     onStdout?: (msg: string) => void
   ): Promise<{ output: string; error?: string }> {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("code-executed"));
+    }
     let consoleOutput = "";
     const logAccumulator = (msg: string) => {
       consoleOutput += msg;
@@ -118,6 +121,9 @@ builtins.input = custom_input
     mainFile: string,
     onStdout?: (msg: string) => void
   ): Promise<{ output: string; files: Record<string, string>; error?: string }> {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("code-executed"));
+    }
     let consoleOutput = "";
     const logAccumulator = (msg: string) => {
       consoleOutput += msg;
@@ -133,7 +139,7 @@ builtins.input = custom_input
       // Ensure /workspace exists
       try {
         pyodide.FS.mkdir('/workspace');
-      } catch (e) {}
+      } catch (e) { }
 
       // Write all workspace files into Pyodide's FS
       for (const [filename, content] of Object.entries(files)) {
@@ -170,7 +176,7 @@ builtins.input = custom_input
       // Read back all files from /workspace to synchronize changes
       const updatedFiles: Record<string, string> = {};
       const fileNames = pyodide.FS.readdir('/workspace') as string[];
-      
+
       for (const name of fileNames) {
         if (name === "." || name === "..") continue;
         const filePath = '/workspace/' + name;
@@ -188,7 +194,7 @@ builtins.input = custom_input
       return { output: consoleOutput, files: updatedFiles };
     } catch (err: any) {
       const errMsg = err.message || String(err);
-      
+
       // Still sync files even on runtime failure (e.g. file was written before crashing)
       const pyodide = window.pyodideInstance;
       const updatedFiles: Record<string, string> = { ...files };
@@ -203,9 +209,9 @@ builtins.input = custom_input
               if (pyodide.FS.isFile(stat.mode)) {
                 updatedFiles[name] = pyodide.FS.readFile(filePath, { encoding: "utf8" }) as string;
               }
-            } catch (e) {}
+            } catch (e) { }
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       return { output: consoleOutput, files: updatedFiles, error: errMsg };

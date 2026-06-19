@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { DBService, hashPassword } from "@/services/db";
+import { DBService } from "@/services/db";
 import { signJWT } from "@/utils/jwt";
 
 export async function POST(request: Request) {
@@ -18,18 +18,19 @@ export async function POST(request: Request) {
     let user = DBService.getUserByEmail(email);
 
     if (!user) {
-      // Create a mock social user
+      // Create a social-auth-only user account.
+      // No password hash is set — these accounts can ONLY authenticate via social provider.
       const name = customName || (provider === "google" ? "Google User" : "SSO User");
       const username = customUsername || email.split("@")[0] || `${provider}_user`;
-      const { hash, salt } = hashPassword("social-login-placeholder-pass");
-      
+
       user = DBService.createUser({
         name,
         username,
         email,
-        passwordHash: hash,
-        salt,
+        passwordHash: "", // Intentionally empty — social accounts have no password
+        salt: "",
         role: "user",
+        authProvider: provider,
         theme: "light",
         isVerified: true,
         learningPreferences: {

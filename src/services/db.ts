@@ -13,6 +13,8 @@ export interface UserRecord {
   salt: string;
   avatar?: string;
   role: "user" | "admin";
+  /** How the account was originally created */
+  authProvider: "password" | "google" | "sso";
   xp: number;
   level: number;
   streak: number;
@@ -27,18 +29,22 @@ export interface UserRecord {
   verificationToken?: string;
   resetToken?: string;
   resetTokenExpires?: number;
+  portfolio?: any;
 }
 
 // Password Hashing helpers
 export function hashPassword(password: string): { hash: string; salt: string } {
   const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+  // 100,000 iterations — 100x improvement over the previous 1,000.
+  // OWASP minimum for PBKDF2-SHA512 is 210,000; 100k is a practical
+  // compromise given the synchronous file-based DB in this sandbox.
+  const hash = crypto.pbkdf2Sync(password, salt, 100_000, 64, "sha512").toString("hex");
   return { hash, salt };
 }
 
 export function verifyPassword(password: string, hash: string, salt: string): boolean {
-  const checkHash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-  return hash === checkHash;
+  const checkHash = crypto.pbkdf2Sync(password, salt, 100_000, 64, "sha512").toString("hex");
+  return checkHash === hash;
 }
 
 // Read database
@@ -60,6 +66,7 @@ function readDB(): UserRecord[] {
         passwordHash: adminHash.hash,
         salt: adminHash.salt,
         role: "admin",
+        authProvider: "password",
         xp: 1500,
         level: 12,
         streak: 5,
@@ -77,6 +84,7 @@ function readDB(): UserRecord[] {
         passwordHash: userHash.hash,
         salt: userHash.salt,
         role: "user",
+        authProvider: "password",
         xp: 120,
         level: 2,
         streak: 2,
@@ -133,7 +141,7 @@ export const DBService = {
     const users = readDB();
     const newUser: UserRecord = {
       ...user,
-      id: `usr_${Math.random().toString(36).substring(2, 11)}`,
+      id: crypto.randomUUID(),
       xp: 0,
       level: 1,
       streak: 0,

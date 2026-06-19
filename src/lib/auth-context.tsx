@@ -56,10 +56,16 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/** Only persist non-sensitive, client-safe fields to localStorage */
+function sanitizeForStorage(user: User): User {
+  const { id, name, username, email, avatar, track, xp, level, streak, joinedAt, portfolio } = user;
+  return { id, name, username, email, avatar, track, xp, level, streak, joinedAt, portfolio };
+}
+
 function persistUser(user: User | null) {
   if (typeof window === "undefined") return;
   if (user) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizeForStorage(user)));
   } else {
     localStorage.removeItem(STORAGE_KEY);
   }

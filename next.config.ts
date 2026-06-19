@@ -5,8 +5,13 @@ const nextConfig: NextConfig = {
   // ─── Optimize: Disable strict mode in dev to speed up initial loads ───
   reactStrictMode: false,
 
-  // ─── Enable Next.js 16 Cache Components ─────────────────────────────
-  cacheComponents: true,
+  // ─── Dev Indicators & Page Buffer Optimizations ─────────────────────
+  // Disable dev indicators and buffer fewer pages in memory to reduce RAM/Swap pressure
+  devIndicators: false,
+  onDemandEntries: {
+    maxInactiveAge: 15 * 1000, // keep pages compiled in memory for 15s max (Turbopack disk cache will reload them instantly)
+    pagesBufferLength: 1,      // buffer only 1 page in memory to prevent RAM bloat
+  },
 
   // ─── Fix: Turbopack workspace root ──────────────────────────────────
   // Without this, Next.js detects /home/nick/package-lock.json as the root

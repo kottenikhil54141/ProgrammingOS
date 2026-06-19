@@ -72,13 +72,13 @@ function ResetPasswordForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-400">
           <AlertCircle className="h-6 w-6" />
         </div>
-        <p className="text-sm text-white/70">
+        <p className="text-xs text-slate-700 dark:text-slate-300">
           Invalid password reset request. Make sure you used the correct link.
         </p>
         <div className="pt-2">
           <Link
             href={ROUTES.LOGIN}
-            className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-[#7C5CFF] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to Login
@@ -124,7 +124,7 @@ function ResetPasswordForm() {
           />
 
           {error && (
-            <p className="text-xs text-red-400 flex items-center gap-1.5 mt-1">
+            <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1.5 mt-1">
               <AlertCircle className="h-3 w-3 shrink-0" />
               {error}
             </p>
@@ -133,7 +133,7 @@ function ResetPasswordForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="group relative mt-2 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-6 py-3.5 font-semibold text-white shadow-[0_8px_32px_rgba(255,107,74,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(255,107,74,0.35)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            className="group relative mt-2 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-5 py-3.5 text-xs font-black text-white shadow-lg shadow-[#7C5CFF]/15 hover:shadow-[#7C5CFF]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none outline-none cursor-pointer"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
@@ -147,7 +147,7 @@ function ResetPasswordForm() {
             ) : (
               <>
                 Confirm New Password
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </>
             )}
           </button>
@@ -162,7 +162,7 @@ function ResetPasswordForm() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
             <CheckCircle className="h-6 w-6" />
           </div>
-          <p className="text-sm text-white/75">{success}</p>
+          <p className="text-xs text-slate-700 dark:text-white/80">{success}</p>
         </motion.div>
       )}
     </AnimatePresence>
@@ -181,7 +181,7 @@ export default function ResetPasswordPage() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-              className="h-6 w-6 rounded-full border-2 border-white/10 border-t-white"
+              className="h-6 w-6 rounded-full border-2 border-[#7C5CFF]/20 border-t-[#7C5CFF]"
             />
           </div>
         }

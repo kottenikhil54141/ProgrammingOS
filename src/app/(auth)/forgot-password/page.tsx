@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, ArrowRight, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import AuthCard from "@/components/auth/AuthCard";
+import FloatingField from "@/components/auth/FloatingField";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
@@ -80,45 +81,24 @@ export default function ForgotPasswordPage() {
               className="space-y-4"
               noValidate
             >
-              <div className="space-y-1.5">
-                <label htmlFor="email" className="block text-sm font-medium text-text/80">
-                  Email address
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted/60">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError(null);
-                    }}
-                    placeholder="you@example.com"
-                    className={cn(
-                      "w-full rounded-2xl border bg-white/[0.03] dark:bg-white/[0.04] pl-11 pr-4 py-3.5 text-sm text-text placeholder-muted/50 outline-none transition-all duration-200",
-                      "focus:bg-[#0F172A]/[0.04] dark:focus:bg-white/[0.07] focus:ring-2",
-                      error
-                        ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-                        : "border-border-subtle focus:border-[#7C5CFF]/60 focus:ring-[#7C5CFF]/20"
-                    )}
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1.5 mt-1">
-                  <AlertCircle className="h-3 w-3 shrink-0" />
-                  {error}
-                </p>
-              )}
+              <FloatingField
+                id="email"
+                label="Email Address"
+                type="email"
+                value={email}
+                onChange={(v) => {
+                  setEmail(v);
+                  setError(null);
+                }}
+                placeholder="you@example.com"
+                icon={<Mail className="h-4 w-4" />}
+                error={error || undefined}
+              />
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="group relative mt-2 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-6 py-3.5 font-semibold text-white shadow-[0_8px_32px_rgba(255,107,74,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(255,107,74,0.35)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="group relative mt-2 flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-5 py-3.5 text-xs font-black text-white shadow-lg shadow-[#7C5CFF]/15 hover:shadow-[#7C5CFF]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none outline-none cursor-pointer"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
@@ -132,7 +112,7 @@ export default function ForgotPasswordPage() {
                 ) : (
                   <>
                     Send Reset Link
-                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                   </>
                 )}
               </button>
@@ -140,7 +120,7 @@ export default function ForgotPasswordPage() {
               <div className="pt-2 text-center">
                 <Link
                   href={ROUTES.LOGIN}
-                  className="inline-flex items-center gap-2 text-sm text-muted hover:text-text transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-[#7C5CFF] transition-colors"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   Back to Login
@@ -157,19 +137,19 @@ export default function ForgotPasswordPage() {
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
                 <CheckCircle className="h-6 w-6" />
               </div>
-              <p className="text-sm text-text">{success}</p>
+              <p className="text-xs text-slate-700 dark:text-white/80">{success}</p>
 
               {simulatedToken && (
-                <div className="rounded-2xl border border-border-subtle bg-[#0F172A]/[0.02] dark:bg-white/[0.02] p-4 text-left">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted block mb-1">
+                <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] p-4 text-left">
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-1">
                     Sandbox Simulation Mode
                   </span>
-                  <p className="text-xs text-muted leading-relaxed mb-3">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
                     Click the direct link below to simulate receiving the password reset email:
                   </p>
                   <Link
                     href={`${ROUTES.RESET_PASSWORD}?token=${simulatedToken}`}
-                    className="block text-center rounded-xl bg-[#0F172A]/[0.03] dark:bg-white/5 border border-border-subtle px-3 py-2 text-xs font-semibold text-[#7C5CFF] hover:bg-[#0F172A]/[0.06] dark:hover:bg-white/10 transition-colors"
+                    className="block text-center rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/[0.08] px-3 py-2 text-xs font-semibold text-[#7C5CFF] hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
                   >
                     Simulate Password Reset Link
                   </Link>
@@ -179,7 +159,7 @@ export default function ForgotPasswordPage() {
               <div className="pt-4">
                 <Link
                   href={ROUTES.LOGIN}
-                  className="inline-flex items-center gap-2 text-sm text-muted hover:text-text transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-[#7C5CFF] transition-colors"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   Back to Login

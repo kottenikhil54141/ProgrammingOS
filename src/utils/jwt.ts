@@ -1,4 +1,21 @@
-const JWT_SECRET = process.env.JWT_SECRET || "niks_ai_super_secret_jwt_key_12983719";
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[AUTH] FATAL: JWT_SECRET environment variable is not set. " +
+        "The application cannot start without it in production."
+      );
+    }
+    // Dev-only fallback — loud warning so it's never missed
+    console.warn(
+      "\x1b[33m[AUTH WARNING]\x1b[0m JWT_SECRET is not set. Using an insecure dev-only " +
+      "fallback. Set JWT_SECRET in .env.local before deploying."
+    );
+    return "dev_only_insecure_jwt_secret_DO_NOT_USE_IN_PRODUCTION";
+  }
+  return secret;
+}
 
 // Helper to convert base64url to string
 function base64urlDecode(str: string): string {
@@ -53,13 +70,15 @@ export async function signJWT(
   expiresInSeconds: number
 ): Promise<string> {
   const header = { alg: "HS256", typ: "JWT" };
-  const exp = Math.floor(Date.now() / 1000) + expiresInSeconds;
-  
+  const now = Math.floor(Date.now() / 1000);
+  const exp = now + expiresInSeconds;
+  const iat = now;
+
   const headerStr = base64urlEncode(JSON.stringify(header));
-  const payloadStr = base64urlEncode(JSON.stringify({ ...payload, exp }));
+  const payloadStr = base64urlEncode(JSON.stringify({ ...payload, exp, iat }));
   const message = `${headerStr}.${payloadStr}`;
-  
-  const signature = await hmacSign(message, JWT_SECRET);
+
+  const signature = await hmacSign(message, getJwtSecret());
   return `${message}.${signature}`;
 }
 
@@ -74,7 +93,7 @@ export async function verifyJWT(token: string): Promise<Record<string, any> | nu
     const [headerStr, payloadStr, signature] = parts;
     const message = `${headerStr}.${payloadStr}`;
     
-    const expectedSignature = await hmacSign(message, JWT_SECRET);
+    const expectedSignature = await hmacSign(message, getJwtSecret());
     if (signature !== expectedSignature) return null;
     
     const decodedPayload = JSON.parse(base64urlDecode(payloadStr));

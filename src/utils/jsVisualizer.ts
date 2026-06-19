@@ -13,6 +13,9 @@ export interface EventLoopFrame {
 export const JSVisualizer = {
   // Execute code in a safe evaluation wrapper, capturing console outputs
   runCode(code: string, files: Record<string, string> = {}): { output: string; error?: string } {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("code-executed"));
+    }
     let capturedLogs: string[] = [];
     const originalLog = console.log;
     const originalWarn = console.warn;

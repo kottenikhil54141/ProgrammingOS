@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DBService } from "@/services/db";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const resetToken = `rst_${Math.random().toString(36).substring(2, 15)}`;
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpires = Date.now() + 3600000; // 1 hour
 
     DBService.updateUser(user.id, {
@@ -32,7 +33,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Password reset link generated.",
-      resetToken, // Returned for sandbox flow testing convenience
+      // Only expose token in non-production for sandbox/demo flow
+      ...(process.env.NODE_ENV !== "production" && { resetToken }),
     });
   } catch (error) {
     console.error("Forgot Password API Error:", error);

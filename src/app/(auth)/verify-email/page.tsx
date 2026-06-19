@@ -60,7 +60,7 @@ function VerifyEmailForm() {
           <div className="flex justify-center">
             <Loader2 className="h-8 w-8 text-[#7C5CFF] animate-spin" />
           </div>
-          <p className="text-sm text-white/75">Verifying your email address...</p>
+          <p className="text-xs text-slate-700 dark:text-slate-350">Verifying your email address...</p>
         </motion.div>
       )}
 
@@ -75,15 +75,15 @@ function VerifyEmailForm() {
             <CheckCircle className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-white">Email verified!</p>
-            <p className="text-xs text-white/55">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Email verified!</p>
+            <p className="text-xs text-slate-500 dark:text-slate-455">
               Your account is now fully activated. You can sign in and start learning.
             </p>
           </div>
           <div className="pt-2">
             <Link
               href={ROUTES.LOGIN}
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-6 py-3.5 font-semibold text-white shadow-[0_8px_32px_rgba(255,107,74,0.25)] hover:-translate-y-0.5 transition-transform"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#FF6B4A] to-[#7C5CFF] px-5 py-3.5 text-xs font-black text-white shadow-lg shadow-[#7C5CFF]/15 hover:shadow-[#7C5CFF]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 outline-none cursor-pointer"
             >
               Sign In
             </Link>
@@ -102,13 +102,13 @@ function VerifyEmailForm() {
             <AlertCircle className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-white">Verification failed</p>
-            <p className="text-xs text-white/55 px-2">{errorMsg}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Verification failed</p>
+            <p className="text-xs text-slate-500 dark:text-slate-455 px-2">{errorMsg}</p>
           </div>
           <div className="pt-2">
             <Link
               href={ROUTES.LOGIN}
-              className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-[#7C5CFF] transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to Login

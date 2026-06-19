@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Eye, EyeOff, Lock, AlertCircle } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface PasswordInputProps {
   id: string;
@@ -22,6 +23,10 @@ export default function PasswordInput({
   showStrengthMeter = false,
 }: PasswordInputProps) {
   const [show, setShow] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const isPopulated = value.length > 0;
+  const isLifted = isFocused || isPopulated;
 
   const strength = useMemo(() => {
     if (!value) return 0;
@@ -34,58 +39,53 @@ export default function PasswordInput({
   }, [value]);
 
   const strengthLabel = ["Too weak", "Weak", "Medium", "Strong"][strength - 1] || "";
-  const strengthColor = [
-    "bg-red-500",
-    "bg-orange-500",
-    "bg-yellow-500",
-    "bg-emerald-500",
-  ][strength - 1] || "bg-white/10";
+  const colors = ["", "#EF4444", "#F59E0B", "#3B82F6", "#22C55E"];
 
   return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between items-center">
-        <label htmlFor={id} className="block text-sm font-medium text-text/80">
-          {label}
-        </label>
-        {showStrengthMeter && value && (
-          <span className="text-xs font-semibold text-muted">
-            Strength:{" "}
-            <span
-              className={cn("text-xs font-bold", {
-                "text-red-500 dark:text-red-400": strength <= 1,
-                "text-orange-500 dark:text-orange-400": strength === 2,
-                "text-yellow-600 dark:text-yellow-400": strength === 3,
-                "text-emerald-500 dark:text-emerald-400": strength === 4,
-              })}
-            >
-              {strengthLabel}
-            </span>
-          </span>
-        )}
-      </div>
-
-      <div className="relative">
-        <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted/60">
+    <div className="space-y-1 relative">
+      <div className={cn(
+        "relative rounded-2xl border transition-all duration-300 bg-slate-50/45 dark:bg-white/[0.02] border-slate-200/80 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.15]",
+        isFocused 
+          ? "border-[#7C5CFF] dark:border-[#7C5CFF] shadow-[0_0_20px_rgba(124,92,255,0.1)] ring-1 ring-[#7C5CFF]/20 bg-white dark:bg-white/[0.04]" 
+          : "shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]",
+        error ? "border-red-500/60 dark:border-red-500/50 focus-within:border-red-500" : ""
+      )}>
+        {/* Left icon wrapper */}
+        <div className={cn(
+          "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300",
+          isFocused ? "text-[#7C5CFF]" : "text-slate-400 dark:text-white/30"
+        )}>
           <Lock className="h-4 w-4" />
         </div>
+
+        {/* Floating Label */}
+        <label
+          htmlFor={id}
+          className={cn(
+            "pointer-events-none absolute left-10 font-bold transition-all duration-300 origin-left select-none",
+            isLifted
+              ? "top-1.5 text-[8px] uppercase tracking-wider text-[#7C5CFF] dark:text-[#7C5CFF]/90"
+              : "top-1/2 -translate-y-1/2 text-xs text-slate-400 dark:text-white/40"
+          )}
+        >
+          {label}
+        </label>
+
         <input
           id={id}
           type={show ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={cn(
-            "w-full rounded-2xl border bg-white/[0.03] dark:bg-white/[0.04] pl-11 pr-12 py-3.5 text-sm text-text placeholder-muted/50 outline-none transition-all duration-200",
-            "focus:bg-[#0F172A]/[0.04] dark:focus:bg-white/[0.07] focus:ring-2",
-            error
-              ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20"
-              : "border-border-subtle focus:border-[#7C5CFF]/60 focus:ring-[#7C5CFF]/20"
-          )}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={isFocused ? placeholder : ""}
+          className="w-full bg-transparent pl-10 pr-10 pt-5 pb-2 text-xs text-slate-900 dark:text-white outline-none"
         />
+
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted/60 hover:text-text transition-colors"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 hover:text-[#7C5CFF] dark:hover:text-[#7C5CFF] transition-colors p-1"
           aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -93,24 +93,53 @@ export default function PasswordInput({
       </div>
 
       {showStrengthMeter && value && (
-        <div className="h-1.5 w-full bg-[#0F172A]/[0.05] dark:bg-white/5 rounded-full overflow-hidden flex gap-1 mt-1.5">
-          {[1, 2, 3, 4].map((step) => (
-            <div
-              key={step}
-              className={cn("h-full flex-1 rounded-full transition-all duration-300", 
-                step <= strength ? strengthColor : "bg-[#0F172A]/[0.05] dark:bg-white/5"
-              )}
-            />
-          ))}
+        <div className="space-y-1 pt-1.5 pl-1">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4].map((step) => (
+              <div
+                key={step}
+                className={cn(
+                  "h-full flex-1 rounded-full transition-all duration-300",
+                  step <= strength ? "" : "bg-slate-200 dark:bg-white/[0.08]"
+                )}
+                style={{
+                  backgroundColor: step <= strength ? colors[strength] : undefined,
+                }}
+              />
+            ))}
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Strength Indicator
+            </span>
+            <span
+              className={cn("text-[9px] font-black uppercase tracking-wider", {
+                "text-red-500": strength <= 1,
+                "text-orange-500": strength === 2,
+                "text-[#7C5CFF]": strength === 3,
+                "text-emerald-500": strength === 4,
+              })}
+            >
+              {strengthLabel}
+            </span>
+          </div>
         </div>
       )}
 
-      {error && (
-        <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1.5 mt-1">
-          <AlertCircle className="h-3 w-3 shrink-0" />
-          {error}
-        </p>
-      )}
+      <AnimatePresence initial={false}>
+        {error && (
+          <motion.p
+            key="error"
+            initial={{ opacity: 0, height: 0, y: -4 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -4 }}
+            className="flex items-center gap-1 text-[10px] text-red-500 dark:text-red-400 pl-1 mt-1"
+          >
+            <AlertCircle className="h-3 w-3 shrink-0" />
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

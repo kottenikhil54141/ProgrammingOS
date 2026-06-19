@@ -22,6 +22,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Reject social-only accounts trying to use password login
+    if (user.authProvider && user.authProvider !== "password") {
+      return NextResponse.json(
+        { error: "social_account" },
+        { status: 403 }
+      );
+    }
+
     const isValid = verifyPassword(password, user.passwordHash, user.salt);
     if (!isValid) {
       return NextResponse.json(

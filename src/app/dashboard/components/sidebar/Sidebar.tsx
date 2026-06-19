@@ -13,6 +13,10 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  FolderGit2,
+  Sparkles,
+  FileText,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import SignOutModal from "@/components/auth/SignOutModal";
@@ -44,7 +48,11 @@ const MENU_ITEMS = [
   { id: "home", label: "Home", icon: Home },
   { id: "learn", label: "Learn", icon: BookOpen },
   { id: "practice", label: "Practice", icon: Code2 },
+  { id: "projects", label: "Projects", icon: FolderGit2 },
+  { id: "mentor", label: "AI Mentor", icon: Sparkles },
   { id: "playground", label: "Playground", icon: Terminal },
+  { id: "resume", label: "Resume Builder", icon: FileText },
+  { id: "portfolio", label: "Portfolio", icon: Globe },
   { id: "settings", label: "Settings", icon: Settings },
 ] as const;
 
