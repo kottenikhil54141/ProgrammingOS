@@ -77,7 +77,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </header>
 
       {/* Main */}
-      <main className="flex flex-1 items-center justify-center px-4 py-8 z-10">
+      <main className="flex flex-1 items-center justify-center px-4 py-8 z-10 [perspective:1400px]">
         {children}
       </main>
 

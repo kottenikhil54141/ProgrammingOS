@@ -131,7 +131,7 @@ export default function Topbar({
       </div>
 
       {/* Right: Actions, XP indicators, Profiles */}
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-2 sm:gap-3.5">
         {/* Level & XP badges */}
         <div className="hidden sm:flex items-center gap-2">
           <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-400">
@@ -141,6 +141,40 @@ export default function Topbar({
           <div className="flex items-center gap-1 rounded-full bg-[#7C5CFF]/15 border border-[#7C5CFF]/20 px-3 py-1 text-xs font-semibold text-[#A78BFF]">
             {user?.xp || 0} XP
           </div>
+        </div>
+
+        {/* Mobile-only compact theme toggle */}
+        <div className="flex md:hidden items-center gap-0.5 rounded-xl border border-border-subtle bg-input-bg/40 p-0.5">
+          <button
+            onClick={() => setTheme("light")}
+            className={cn(
+              "p-1.5 rounded-lg transition-all duration-200 outline-none",
+              theme === "light" ? "bg-white dark:bg-white/10 text-[#FF6B4A]" : "text-muted hover:text-text"
+            )}
+            aria-label="Light mode"
+          >
+            <Sun className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => setTheme("dark")}
+            className={cn(
+              "p-1.5 rounded-lg transition-all duration-200 outline-none",
+              theme === "dark" ? "bg-white dark:bg-white/10 text-[#A78BFF]" : "text-muted hover:text-text"
+            )}
+            aria-label="Dark mode"
+          >
+            <Moon className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => setTheme("system")}
+            className={cn(
+              "p-1.5 rounded-lg transition-all duration-200 outline-none",
+              theme === "system" ? "bg-white dark:bg-white/10 text-[#A78BFF]" : "text-muted hover:text-text"
+            )}
+            aria-label="System mode"
+          >
+            <Monitor className="h-3 w-3" />
+          </button>
         </div>
 
         {/* Notifications Icon with unread badge */}

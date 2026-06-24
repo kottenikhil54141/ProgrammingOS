@@ -38,16 +38,31 @@ export default function FloatingField({
 
   return (
     <div className="space-y-1 relative">
-      <div className={cn(
-        "relative rounded-2xl border transition-all duration-300 bg-slate-50/45 dark:bg-white/[0.02] border-slate-200/80 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.15]",
-        isFocused 
-          ? "border-[#7C5CFF] dark:border-[#7C5CFF] shadow-[0_0_20px_rgba(124,92,255,0.1)] ring-1 ring-[#7C5CFF]/20 bg-white dark:bg-white/[0.04]" 
-          : "shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]",
-        error ? "border-red-500/60 dark:border-red-500/50 focus-within:border-red-500" : ""
-      )}>
+      <div
+        className={cn(
+          "relative rounded-2xl border transition-all duration-500 bg-slate-50/45 dark:bg-white/[0.02] border-slate-200/80 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.15] overflow-hidden",
+          isFocused 
+            ? "border-[#7C5CFF] dark:border-[#7C5CFF] shadow-[0_0_25px_rgba(124,92,255,0.15)] ring-1 ring-[#7C5CFF]/25 bg-white dark:bg-white/[0.04]" 
+            : "shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]",
+          error ? "border-red-500/60 dark:border-red-500/50 focus-within:border-red-500" : ""
+        )}
+        style={{
+          transform: isFocused ? "translateZ(10px) scale(1.01)" : "translateZ(0px) scale(1)",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        {isFocused && (
+          <div
+            className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-[#7C5CFF]/8 to-transparent"
+            style={{
+              animation: "sweepLine 1.8s ease-in-out infinite",
+              backgroundSize: "200% 100%",
+            }}
+          />
+        )}
         {/* Left icon wrapper */}
         <div className={cn(
-          "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300",
+          "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 z-10",
           isFocused ? "text-[#7C5CFF]" : "text-slate-400 dark:text-white/30"
         )}>
           {icon}
@@ -107,6 +122,12 @@ export default function FloatingField({
           </motion.p>
         )}
       </AnimatePresence>
+      <style>{`
+        @keyframes sweepLine {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
     </div>
   );
 }

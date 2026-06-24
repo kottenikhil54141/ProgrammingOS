@@ -28,6 +28,7 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 import SocialLogin from "@/components/auth/SocialLogin";
 import FloatingField from "@/components/auth/FloatingField";
+import ThreeDOrb from "@/components/auth/ThreeDOrb";
 
 /* ─── Interactive AI Core Visual ────────────────────────────────── */
 function AICoreVisual() {
@@ -394,18 +395,30 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   // Mode state: 'login' or 'signup'
   const [mode, setModeState] = useState<"login" | "signup">(initialMode);
   
-  // Spotlight Glow effect
+  // Spotlight Glow effect & 3D Tilt
   const cardRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    setCoords({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setCoords({ x, y });
+
+    // Calculate rotation (-6 to 6 degrees max)
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateY = ((x - centerX) / centerX) * 6; // left is negative, right is positive
+    const rotateX = -((y - centerY) / centerY) * 6; // top is positive, bottom is negative
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ x: 0, y: 0 });
   };
 
   // Sync mode with URL search params if present
@@ -547,10 +560,15 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           </div>
 
           <div className="w-full relative overflow-hidden rounded-3xl glass-surface p-6 sm:p-8 flex flex-col gap-6 shadow-elevated">
+            {/* Terminal Console – shown above the form on mobile */}
+            <div className="w-full flex justify-center">
+              <LiveTerminalConsole />
+            </div>
+
             {/* Header with orbital visual */}
             <div className="flex flex-col items-center text-center">
               <div className="scale-75 -my-2 flex justify-center w-full">
-                <AICoreVisual />
+                <ThreeDOrb size={120} />
               </div>
               <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mt-2">
                 {mode === "signup" ? "Create Account" : "Welcome back"}
@@ -920,11 +938,6 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Mobile Terminal View for Elite Look */}
-            <div className="w-full flex justify-center border-t border-slate-200/50 dark:border-white/[0.06] pt-4">
-              <LiveTerminalConsole />
-            </div>
           </div>
         </div>
       </div>

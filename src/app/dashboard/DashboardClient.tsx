@@ -32,6 +32,7 @@ import MentorChat from "./components/widgets/MentorChat";
 import MentorWidget from "./components/widgets/MentorWidget";
 import ResumeBuilderWidget from "./components/widgets/ResumeBuilderWidget";
 import PortfolioWidget from "./components/widgets/PortfolioWidget";
+import SkillRadarWidget from "./components/widgets/SkillRadarWidget";
 
 import InterviewTracker from "./components/widgets/InterviewTracker";
 import SettingsWidget from "./components/settings/SettingsWidget";
@@ -329,6 +330,15 @@ export default function DashboardClient() {
                     />
                     <NotesBookmarks />
                     <GoalsWidget pythonProgress={pythonProgress} jsProgress={jsProgress} />
+                  </div>
+                  {/* Live Skill Radar Chart */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-1">
+                      <SkillRadarWidget pythonProgress={pythonProgress} jsProgress={jsProgress} />
+                    </div>
+                    <div className="md:col-span-2 flex flex-col gap-6">
+                      <RecentProjects setActiveTab={setActiveTab} />
+                    </div>
                   </div>
                 </div>
               )}
